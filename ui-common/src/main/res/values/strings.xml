@@ -175,6 +175,64 @@
     <string name="settings_no_internet">This app has no internet permission.</string>
     <string name="settings_licenses">Open-source licenses</string>
 
+    <!-- Added with the v1 screens -->
+    <string name="action_lock">Lock now</string>
+    <string name="state_expanded">Expanded</string>
+    <string name="state_collapsed">Collapsed</string>
+    <string name="duration_min_sec">%1$d min %2$02d s</string>
+    <string name="duration_sec">%1$d s</string>
+    <string name="network_amex_short">AMEX</string>
+    <plurals name="home_card_count">
+        <item quantity="one">%1$d card, encrypted on this device</item>
+        <item quantity="other">%1$d cards, encrypted on this device</item>
+    </plurals>
+
+    <string name="add_holder_placeholder">Your name</string>
+    <string name="add_expiry_placeholder">MM/YY</string>
+    <string name="add_preview_description">Card preview</string>
+    <string name="add_cvv_saved">Saved</string>
+    <string name="add_remove_cvv">Remove saved CVV</string>
+    <string name="add_keep_cvv">Keep saved CVV</string>
+    <string name="add_network_auto">Detect automatically</string>
+    <string name="add_color">Card color</string>
+    <string name="tint_primary">Navy</string>
+    <string name="tint_tertiary">Emerald</string>
+    <string name="tint_secondary">Slate</string>
+    <string name="tint_night">Night</string>
+    <string name="tint_soft">Mist</string>
+
+    <string name="detail_section_card">Card</string>
+    <string name="detail_expiry">Expiry</string>
+    <string name="detail_cvv">CVV</string>
+    <string name="detail_copy_hint">Tap a row to copy. Long-press the number to copy it with spaces.</string>
+    <string name="detail_revealed_announce">Card number shown. Hides in 20 seconds.</string>
+    <string name="detail_hidden_announce">Card number hidden</string>
+
+    <string name="copy_done_number">Card number copied</string>
+    <string name="copy_done_expiry">Expiry copied</string>
+    <string name="copy_done_holder">Name copied</string>
+    <string name="copy_done_cvv">CVV copied</string>
+    <string name="copy_done_all">Card details copied</string>
+    <string name="copy_step_body">Switch to the checkout page between steps. Each tap copies the next field.</string>
+    <string name="copy_step_done">Copied</string>
+    <string name="copy_step_tap">Tap to copy</string>
+    <string name="copy_step_waiting">Next</string>
+
+    <string name="change_pin_current">Enter your current PIN</string>
+    <string name="change_pin_new">Choose a new PIN</string>
+    <string name="change_pin_locked_out">Too many attempts. Try again later.</string>
+
+    <string name="settings_biometric_none">Enroll a fingerprint in system settings first.</string>
+    <string name="settings_never_share_body">Hides the Share button on every card.</string>
+    <string name="settings_dynamic_color_body">Use colors from your wallpaper.</string>
+    <string name="settings_no_internet_body">Nothing leaves this device unless you share it.</string>
+    <string name="settings_section_danger">Danger zone</string>
+    <string name="settings_wipe_confirm_title">Erase everything?</string>
+    <string name="settings_clipboard_10s">10 seconds</string>
+    <string name="settings_clipboard_30s">30 seconds</string>
+    <string name="settings_clipboard_60s">1 minute</string>
+    <string name="settings_clipboard_never">Never</string>
+
     <!-- Generic -->
     <string name="error_generic">Something went wrong. Try again.</string>
 </resources>

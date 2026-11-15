@@ -1,37 +1,59 @@
 package com.aiyu.clavis
 
+import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.aiyu.clavis.ui.R
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aiyu.clavis.core.settings.ThemeMode
+import com.aiyu.clavis.ui.ClavisNavHost
+import com.aiyu.clavis.ui.SessionViewModel
 import com.aiyu.clavis.ui.theme.ClavisTheme
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : ComponentActivity() {
+@AndroidEntryPoint
+class MainActivity : FragmentActivity() {
+    private val session: SessionViewModel by viewModels()
+    private var stoppedAt = 0L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        // Always on: blocks screenshots, screen recording and the recents thumbnail.
+        // Always on: blocks screenshots, screen recording and the recents thumbnail (D12).
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        if (Build.VERSION.SDK_INT >= 33) setRecentsScreenshotEnabled(false)
         enableEdgeToEdge()
         setContent {
-            ClavisTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(stringResource(R.string.app_tagline), style = MaterialTheme.typography.headlineMedium)
-                    }
-                }
+            val settings by session.settings.collectAsStateWithLifecycle()
+            val dark = when (settings.theme) {
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+            }
+            ClavisTheme(dark = dark, dynamicColor = settings.dynamicColor) {
+                ClavisNavHost(session)
             }
         }
+    }
+
+    // Auto-lock: background longer than the chosen delay (0 = immediately) ends the session (02-SECURITY.md).
+    override fun onStop() {
+        super.onStop()
+        if (isChangingConfigurations) return
+        stoppedAt = SystemClock.elapsedRealtime()
+        if (session.settings.value.autoLockMs == 0L) session.lock()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (stoppedAt > 0 && SystemClock.elapsedRealtime() - stoppedAt >= session.settings.value.autoLockMs) session.lock()
+        stoppedAt = 0
     }
 }

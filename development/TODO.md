@@ -17,8 +17,9 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 - [x] `ui-common`: `Motion.kt` + `rememberReducedMotion`, `InnerScreen`, predictive back, shared-transition helpers (port from Rewire)
 - [x] Add Hilt, Room, DataStore, Navigation Compose to the catalog use sites
 - [ ] `dev` / `prod` flavors, DEV badge
-- [ ] `NavHost` skeleton with all routes from `03-ARCHITECTURE.md`
-- [ ] `FLAG_SECURE`, `setRecentsScreenshotEnabled(false)` (API 33+), sensitive-content flag (after V3)
+- [x] `NavHost` skeleton with all routes from `03-ARCHITECTURE.md`
+- [x] `FLAG_SECURE`, `setRecentsScreenshotEnabled(false)` (API 33+)
+- [ ] Sensitive-content flag (after V3)
 - [ ] CI: assemble, unit tests, lint, manifest check that `INTERNET` is absent
 
 ## Phase 2 — Vault and lock
@@ -26,28 +27,28 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 - [x] `KeyManager`: Keystore `K_device`, `K_bio` (StrongBox when available)
 - [x] `PinKdf` (Argon2id or PBKDF2 per D15) + tests
 - [x] DEK generation, wrap/unwrap for PIN and biometric paths
-- [ ] `VaultSession` (Locked/Unlocked), auto-lock on stop timeout and screen off
-- [ ] `AuthGate.requireFresh(60 s)`
+- [x] `VaultSession` (Locked/Unlocked), auto-lock on stop timeout and screen off
+- [x] `AuthGate.requireFresh(60 s)`
 - [x] Throttle schedule persisted against elapsed realtime + tests
 - [ ] Optional wipe after 10 failures
-- [ ] Biometric enroll/invalidations handling (fallback to PIN, re-enable flow)
+- [x] Biometric enroll/invalidations handling (fallback to PIN, re-enable flow)
 - [x] Change PIN (re-wrap only), erase vault
 - [x] Tink AEAD wrapper with AAD = id + field + schema version + tests (round trip, AAD mismatch)
 
 ## Phase 3 — Onboarding and lock UI
 
-- [ ] Intro pager (3 pages, expressive illustrations)
-- [ ] Security setup stepper: create PIN, confirm PIN, optional biometric
+- [x] Intro pager (3 pages, expressive illustrations)
+- [x] Security setup stepper: create PIN, confirm PIN, optional biometric
 - [x] `PinPad` component (72 dp keys, haptics, shake, a11y)
-- [ ] Lock screen with lockout countdown and auto biometric prompt
+- [x] Lock screen with lockout countdown and auto biometric prompt
 
 ## Phase 4 — Cards
 
 - [x] Room schema, `CardEntity`, `CardDao`, repository (ciphertext in, `CardRecord` out)
 - [x] `CardRecord` serialization + schema versioning
-- [ ] Home: collapsing large top bar, `CardSurface` list, empty state, FAB menu
-- [ ] Add card (manual): live preview, grouping per network, Luhn, expiry validation, CVV optional with warning
-- [ ] Card detail: mask/reveal with 20 s timer, edit, delete with fresh auth
+- [x] Home: collapsing large top bar, `CardSurface` list, empty state, FAB menu
+- [x] Add card (manual): live preview, grouping per network, Luhn, expiry validation, CVV optional with warning
+- [x] Card detail: mask/reveal with 20 s timer, edit, delete with fresh auth
 - [ ] Large-screen list-detail layout
 
 ## Phase 5 — Card intelligence
@@ -61,17 +62,17 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 
 ## Phase 6 — Copy and share
 
-- [ ] Field copy with sensitive clip flag, auto-clear timer, snackbar with "Clear now"
-- [ ] Copy-all text, step-by-step copy sheet
-- [ ] Share options sheet (CVV off by default, resets each time), preview
-- [ ] Bitmap renderer (front + optional back panel), PNG to `cache/shared/`, `FileProvider`
-- [ ] `ACTION_SEND` image + text, text-only fallback, cache cleanup on return / lock / start
-- [ ] Optional "disable sharing" setting
+- [x] Field copy with sensitive clip flag, auto-clear timer, snackbar with "Clear now"
+- [x] Copy-all text, step-by-step copy sheet
+- [x] Share options sheet (CVV off by default, resets each time), preview
+- [x] Bitmap renderer (front + optional back panel), PNG to `cache/shared/`, `FileProvider`
+- [x] `ACTION_SEND` image + text, text-only fallback, cache cleanup on return / lock / start
+- [x] Optional "disable sharing" setting
 
 ## Phase 7 — Settings, polish, hardening
 
-- [ ] Settings screens per `06-UX-DESIGN.md`
-- [ ] Theme (system/light/dark), dynamic color toggle
+- [x] Settings screens per `06-UX-DESIGN.md`
+- [x] Theme (system/light/dark), dynamic color toggle
 - [ ] Locale folders in `ui-common` (hi, etc.), RTL check
 - [ ] TalkBack pass: masked descriptions, reveal announcements
 - [ ] R8 release, strip `Log` calls, verify `adb backup` empty, rooted-emulator storage inspection

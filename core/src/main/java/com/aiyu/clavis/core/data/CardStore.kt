@@ -68,8 +68,9 @@ class AuthRequiredException : Exception("Fresh authentication required")
 class CardRepository(private val dao: CardDao, private val vault: Vault) {
     private val json = Json { ignoreUnknownKeys = true }
 
-    val cards: Flow<List<Card>> = combine(dao.observeAll(), vault.state) { rows, _ ->
-        val cipher = vault.cipher ?: return@combine emptyList()
+    /** null while locked, so screens never mistake "locked" for "no cards". */
+    val cards: Flow<List<Card>?> = combine(dao.observeAll(), vault.state) { rows, _ ->
+        val cipher = vault.cipher ?: return@combine null
         rows.mapNotNull { row ->
             runCatching {
                 Card(row.id, json.decodeFromString<CardRecord>(cipher.open(row.id, Field.PAYLOAD, row.payload).decodeToString()), row.cvvPayload != null, row.sortKey)
