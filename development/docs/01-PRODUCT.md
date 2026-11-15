@@ -8,7 +8,7 @@ Tagline (working): **Every card, locked tight.**
 
 ## Principles
 
-1. **Offline by construction.** The app declares no `INTERNET` permission. Nothing can leave the device except through an explicit user share. This is verifiable by anyone reading the manifest.
+1. **Offline for your data.** The only network use is the GitHub update check (D24), fenced to GitHub hosts by the network security config. Card data can leave the device only through an explicit user share.
 2. **Secure by default, convenient on demand.** Every sensitive reveal is gated. Convenience (copy, share) works inside that gate, never around it.
 3. **No surprises.** Anything that creates an unprotected copy (clipboard, shared image) is announced, scoped and auto-cleaned where Android allows.
 4. **Simple surface.** Material 3 Expressive, few screens, large touch targets.

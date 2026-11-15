@@ -172,7 +172,7 @@
     <string name="settings_dynamic_color">Dynamic color</string>
     <string name="settings_section_about">About</string>
     <string name="settings_version">Version %1$s</string>
-    <string name="settings_no_internet">This app has no internet permission.</string>
+    <string name="settings_no_internet">Network is used only for updates.</string>
     <string name="settings_licenses">Open-source licenses</string>
 
     <!-- Added with the v1 screens -->
@@ -225,7 +225,7 @@
     <string name="settings_biometric_none">Enroll a fingerprint in system settings first.</string>
     <string name="settings_never_share_body">Hides the Share button on every card.</string>
     <string name="settings_dynamic_color_body">Use colors from your wallpaper.</string>
-    <string name="settings_no_internet_body">Nothing leaves this device unless you share it.</string>
+    <string name="settings_no_internet_body">Only GitHub is contacted, to look for a new version. Your cards never leave this device unless you share them.</string>
     <string name="settings_section_danger">Danger zone</string>
     <string name="settings_wipe_confirm_title">Erase everything?</string>
     <string name="settings_clipboard_10s">10 seconds</string>
@@ -256,4 +256,29 @@
 
     <!-- Generic -->
     <string name="error_generic">Something went wrong. Try again.</string>
+
+    <!-- Updates -->
+    <string name="settings_section_updates">Updates</string>
+    <string name="settings_updates_auto">Check for updates</string>
+    <string name="settings_updates_auto_body">Looks at this app\'s GitHub releases when you open it. Nothing else is sent.</string>
+    <string name="update_check">Check now</string>
+    <string name="update_checking">Checking…</string>
+    <string name="update_up_to_date">You have the latest version.</string>
+    <string name="update_available_title">Update available</string>
+    <string name="update_available_body">Version %1$s is ready. You have %2$s.</string>
+    <string name="update_download">Download</string>
+    <string name="update_downloading">Downloading… %1$d%%</string>
+    <string name="update_install">Install</string>
+    <string name="update_later">Not now</string>
+    <string name="update_allow_install">Allow installing</string>
+    <string name="update_allow_install_body">Android needs your permission once to let Clavis install updates.</string>
+    <string name="update_err_github">GitHub answered %1$d.</string>
+    <string name="update_err_check">Could not check for updates.</string>
+    <string name="update_err_download">Download failed.</string>
+    <string name="update_err_download_code">Download failed (%1$d).</string>
+    <string name="update_err_checksum">The download is damaged. Try again.</string>
+    <string name="update_err_start">Could not start the install.</string>
+    <string name="update_err_screen">Could not open the installer.</string>
+    <string name="update_err_signature">This build is signed with a different key than the installed app.</string>
+    <string name="update_err_install">The install failed.</string>
 </resources>

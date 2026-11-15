@@ -194,6 +194,7 @@ fun ClavisNavHost(session: SessionViewModel, nav: NavHostController = rememberNa
             }
         }
         FreshAuthHost(session)
+        com.aiyu.clavis.update.UpdateHost(unlocked = state == VaultState.UNLOCKED)
     }
 }
 

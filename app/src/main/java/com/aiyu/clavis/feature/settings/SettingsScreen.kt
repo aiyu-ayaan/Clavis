@@ -163,6 +163,8 @@ fun SettingsScreen(onBack: () -> Unit, onChangePin: () -> Unit, vm: SettingsView
             }
         }
         Spacer(Modifier.height(16.dp))
+        UpdatesGroup(s.updatesEnabled, onEnabled = { on -> vm.update { it.copy(updatesEnabled = on) } })
+        Spacer(Modifier.height(16.dp))
         Group(stringResource(R.string.settings_section_about)) {
             Row(Icons.Rounded.Info, stringResource(R.string.app_name), stringResource(R.string.settings_version, BuildConfig.VERSION_NAME))
             Row(Icons.Rounded.CloudOff, stringResource(R.string.settings_no_internet), stringResource(R.string.settings_no_internet_body))
@@ -259,4 +261,25 @@ private fun <T> ChoiceDialog(title: String, choices: List<T>, selected: T, label
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
+}
+
+@Composable
+private fun UpdatesGroup(enabled: Boolean, onEnabled: (Boolean) -> Unit, vm: com.aiyu.clavis.update.UpdateViewModel = hiltViewModel()) {
+    val state by vm.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    Group(stringResource(R.string.settings_section_updates)) {
+        ToggleRow(Icons.Rounded.Info, stringResource(R.string.settings_updates_auto), stringResource(R.string.settings_updates_auto_body), enabled, onChange = onEnabled)
+        ListItem(
+            headlineContent = { Text(com.aiyu.clavis.update.updateStatusText(state) ?: stringResource(R.string.settings_version, BuildConfig.VERSION_NAME)) },
+            trailingContent = {
+                Column(horizontalAlignment = Alignment.End) {
+                    com.aiyu.clavis.update.UpdateActions(state, vm)
+                    TextButton(onClick = { scope.launch { vm.updater.check(manual = true) } }, enabled = state !is com.aiyu.clavis.update.UpdateState.Checking && state !is com.aiyu.clavis.update.UpdateState.Downloading) {
+                        Text(stringResource(R.string.update_check))
+                    }
+                }
+            },
+            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        )
+    }
 }

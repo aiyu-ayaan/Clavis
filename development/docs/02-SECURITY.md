@@ -13,7 +13,7 @@ Goal: as secure as an offline Android app can be. This document is the contract.
 | T5 | Screenshots, screen recording, recents thumbnail | yes | `FLAG_SECURE`, recents screenshot disabled, content-sensitivity flag where supported. |
 | T6 | Clipboard snooping by other apps or keyboards | yes | Sensitive clip flag, short auto-clear, never copy silently. |
 | T7 | Malicious app on the same device | partial | Sandbox, no exported components except launcher, no IPC surface, accessibility-service overlay risk documented. |
-| T8 | Data exfiltration by the app itself or a dependency | yes | No `INTERNET` permission, no analytics or crash SDKs with network, dependency allowlist. |
+| T8 | Data exfiltration by the app itself or a dependency | yes | `INTERNET` only for the GitHub updater; network security config trusts no other host (D24); no analytics or crash SDKs; dependency allowlist. |
 | T9 | Backup and device-transfer leaks | yes | `allowBackup=false`, data-extraction rules exclude everything. |
 | T10 | Malware with root and live memory access | no | Out of scope. Reduce window: keep plaintext in memory only while needed, zero buffers. |
 | T11 | Coerced unlock | no | Out of scope. |
@@ -92,7 +92,7 @@ DEK  (data encryption key, 256-bit random, generated once at setup)
 
 ## Build and platform hardening
 
-- Manifest: no `INTERNET`, `android:allowBackup="false"`, `dataExtractionRules` and `fullBackupContent` exclude all, `android:usesCleartextTraffic="false"`, `android:debuggable` false in release, only `MainActivity` exported.
+- Manifest: `INTERNET` only with the GitHub-only `network_security_config.xml` (D24), `android:allowBackup="false"`, `dataExtractionRules` and `fullBackupContent` exclude all, `android:usesCleartextTraffic="false"`, `android:debuggable` false in release, only `MainActivity` exported.
 - R8 minify and resource shrinking on release. Strip logging with R8 rules (`Log.*` removal) in release.
 - `CAMERA` permission requested only on first scan, with rationale. No other dangerous permissions.
 - No third-party SDKs that phone home (Firebase Analytics, Crashlytics, ads). Crash reports are local-only and user-exportable.
@@ -105,4 +105,4 @@ DEK  (data encryption key, 256-bit random, generated once at setup)
 - Unit tests: AEAD round-trip, AAD mismatch rejection, wrong-key rejection, KDF determinism, throttle schedule.
 - Instrumented tests: lock on background, fresh-auth gating, clipboard flag present and cleared, `FLAG_SECURE` set.
 - Manual: inspect `/data/data/<pkg>` on a rooted emulator after saving a card and confirm no plaintext; `adb backup` returns nothing; screenshot returns black; recents shows blank.
-- Static: `apkanalyzer manifest print` shows no `INTERNET`; dependency tree has no network SDKs.
+- Static: `apkanalyzer manifest print` shows `INTERNET` and `networkSecurityConfig` limited to GitHub; dependency tree has no network SDKs.

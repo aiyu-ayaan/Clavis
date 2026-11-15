@@ -26,7 +26,7 @@ Update the matching doc and `TODO.md` in the same commit as any change that alte
 
 ## Hard rules
 
-1. **No `INTERNET` permission, ever.** No analytics, crash, ads or any networking SDK. A change that needs the network needs an entry in `07-DECISIONS.md` first.
+1. **Network is for the GitHub updater only (D24).** `INTERNET` exists solely for the update check/download, fenced to GitHub hosts by `network_security_config.xml`. No analytics, crash, ads or any networking SDK. Any other network use needs an entry in `07-DECISIONS.md` first.
 2. **All user-visible strings live in `ui-common/src/main/res/values/strings.xml`** (plus its locale folders). Never add `strings.xml` to `:app` or `:core`. Reference with `com.aiyu.clavis.ui.R`.
 3. **Card data never touches disk, logs, backups or test fixtures in plaintext.** Only AEAD ciphertext is persisted. Tests use published processor test PANs (e.g. `4242424242424242`), never real cards.
 4. **No `security-crypto` (deprecated).** Use Android Keystore + Tink. Key hierarchy in `02-SECURITY.md` is a contract.

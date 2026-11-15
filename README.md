@@ -9,9 +9,9 @@
 ![Min SDK](https://img.shields.io/badge/minSdk-28-informational)
 ![Encrypted](https://img.shields.io/badge/AES--256--GCM-per%20field-success)
 
-An offline card vault for Android. Clavis keeps your cards (number, expiry, holder, optional CVV) behind a
-mandatory PIN and optional biometric, with smart copy and a safe share flow. It has no `INTERNET` permission,
-no analytics and no cloud: your cards never leave the phone.
+A local card vault for Android. Clavis keeps your cards (number, expiry, holder, optional CVV) behind a
+mandatory PIN and optional biometric, with smart copy and a safe share flow. No analytics, no cloud, no account:
+your cards never leave the phone. The only network use is the update check against this repository's GitHub releases.
 
 - Mandatory PIN (4–8 digits, trivial PINs rejected) with optional biometric unlock
 - Field-level **AES-256-GCM** (Tink); keys wrapped by the hardware-backed Android Keystore
@@ -23,6 +23,7 @@ no analytics and no cloud: your cards never leave the phone.
 - The only PIN recovery is the phone's own screen lock, or erasing the vault. No email, cloud, hint or security question
 - Material 3 Expressive: shared-element transitions, predictive back, animated splash, reduced-motion support
 - `allowBackup` is off, so nothing is backed up or transferred
+- In-app updates from GitHub releases, installed through Android's own installer (Settings → Updates)
 
 ## How it fits together
 
@@ -94,7 +95,7 @@ Release signing reads `keystore.properties` (gitignored, never commit it).
 
 ## Privacy
 
-- No `INTERNET` permission, and none will be added. No analytics, crash reporting, ads or network SDK.
+- The only network traffic is the update check and download from GitHub. A network security config trusts no other host, so no library can send anything elsewhere. No analytics, crash reporting, ads or network SDK.
 - Card data never reaches disk, logs or backups in plaintext. Tests use published processor test numbers
   (for example `4242424242424242`), never real cards.
 - Every clipboard write sets the sensitive flag and schedules an automatic clear.

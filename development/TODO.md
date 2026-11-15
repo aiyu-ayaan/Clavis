@@ -93,3 +93,10 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 - [ ] Encrypted passphrase export/import (D18)
 - [ ] Non-card secrets (IDs, bank accounts)
 - [ ] Optional Play-services card recognition path
+
+## Release and updates
+
+- [x] In-app updater from GitHub releases (D24): check on launch, Settings → Updates, system installer
+- [x] Release workflow (`!feat` / `!fix` / `!alpha` markers → release PR → signed APK + GitHub Release)
+- [x] Release signing from `ANDROID_KEYSTORE_*` secrets, alias `Clavis`
+- [x] APK size: ARM ABIs only, English-only library resources, R8 + resource shrinking

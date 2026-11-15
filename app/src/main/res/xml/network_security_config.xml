@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Only GitHub is reachable (release list and APK download). Every other host fails certificate validation, so a
+     dependency's telemetry (ML Kit datatransport) cannot send anything. See 07-DECISIONS.md D24. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors />
+    </base-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">github.com</domain>
+        <domain includeSubdomains="true">githubusercontent.com</domain>
+        <trust-anchors><certificates src="system" /></trust-anchors>
+    </domain-config>
+</network-security-config>

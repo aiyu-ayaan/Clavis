@@ -20,6 +20,8 @@ data class Settings(
     val autoLockMs: Long = 30_000,
     val clipboardClearSec: Int = 30,
     val neverShare: Boolean = false,
+    val updatesEnabled: Boolean = true,
+    val updateLastChecked: Long = 0,
 ) {
     companion object {
         val AUTO_LOCK_CHOICES = listOf(0L, 30_000L, 60_000L, 300_000L)
@@ -36,6 +38,8 @@ class SettingsStore(private val context: Context) {
         val autoLock = longPreferencesKey("auto_lock_ms")
         val clipboard = intPreferencesKey("clipboard_clear_sec")
         val neverShare = booleanPreferencesKey("never_share")
+        val updates = booleanPreferencesKey("updates_enabled")
+        val updateChecked = longPreferencesKey("update_last_checked")
     }
 
     val settings: Flow<Settings> = context.dataStore.data.map { it.toSettings() }
@@ -48,6 +52,8 @@ class SettingsStore(private val context: Context) {
             prefs[K.autoLock] = s.autoLockMs
             prefs[K.clipboard] = s.clipboardClearSec
             prefs[K.neverShare] = s.neverShare
+            prefs[K.updates] = s.updatesEnabled
+            prefs[K.updateChecked] = s.updateLastChecked
         }
     }
 
@@ -61,5 +67,7 @@ class SettingsStore(private val context: Context) {
         autoLockMs = this[K.autoLock] ?: 30_000,
         clipboardClearSec = this[K.clipboard] ?: 30,
         neverShare = this[K.neverShare] ?: false,
+        updatesEnabled = this[K.updates] ?: true,
+        updateLastChecked = this[K.updateChecked] ?: 0,
     )
 }
