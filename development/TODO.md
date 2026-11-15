@@ -59,6 +59,8 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 - [x] `NetworkDetector` data-driven table + tests with published test PANs (V5)
 - [x] BIN table build script (CSV → `bins.bin`), `BinLookup` (6-digit; 8-digit when data exists) + tests
 - [ ] Curated Indian issuer layer
+- [x] Card art (D25): `IssuerBrand` bank colour table, network fallback, least-used variant for same-bank cards + tests
+- [ ] Card art on the card face, list swatch, share image; bank/theme colour picker
 - [x] Detected chips (bank, network, type) editable in the form
 - [x] Scan (only text inside the guide frame: not yet, whole frame is parsed): CameraX preview, ML Kit bundled OCR, `CardTextParser`, 3-of-5 stability filter, torch, guide frame
 - [x] Parser tests from recorded text fixtures (no real card numbers)

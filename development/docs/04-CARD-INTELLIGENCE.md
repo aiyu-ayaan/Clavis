@@ -76,7 +76,16 @@ Packaging the table:
 - Unknown prefix: leave issuer and type empty and let the user type them. Never block saving.
 - Always show metadata as "detected", editable. Wrong guesses are easy to fix, silent wrong data is not.
 
-Issuer branding: a small set of bundled issuer logos or just colored initials. Using real bank logos has trademark implications; default to a neutral tinted card with the bank's name as text and the network mark.
+## Card art (D25)
+
+No card images are fetched or bundled. Wallet apps get real card art through network token services, which need onboarding and send the card to a server, and apps that fetch art by BIN leak the prefix (D7). Bank logos are trademarks (V8).
+
+Instead, `core/card/CardArt.kt` maps the issuer to a base colour:
+
+- `IssuerBrand.of(issuer)` matches whole words in the normalised issuer name (BIN table or typed), first match wins, so "State Bank of India" and "Union Bank of India" come before "Bank of India". About 30 banks: the largest Indian issuers in `bins.bin` plus major US/UK/global ones. Each holds only its public brand colour.
+- No match: one base colour per network (`networkArt`).
+- Several cards from one bank: each theme has `ART_VARIANTS` (4) variants (classic, deep, mist, graphite), each with its own ring pattern. A new card gets the variant least used in its family (same bank theme, else same issuer text, else same network); a fifth card reuses one and its last four still tell it apart. The variant is stored in the encrypted record (`CardRecord.artVariant`); null keeps the older app-theme tint (`colorSeed`), so existing cards do not change until edited.
+- The bank's name shows as text and the network as the text mark. No logos.
 
 ## Network marks
 

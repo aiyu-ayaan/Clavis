@@ -19,6 +19,8 @@ data class CardRecord(
     val country: String? = null,
     val colorSeed: Int = 0,
     val notes: String? = null,
+    /** Bank colour variant (0 until ART_VARIANTS); null keeps the app-theme tint from [colorSeed]. */
+    val artVariant: Int? = null,
 ) {
     val expiry: Expiry get() = Expiry(expiryMonth, expiryYear)
 
