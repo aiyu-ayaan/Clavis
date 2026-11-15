@@ -290,6 +290,9 @@
     <string name="update_channel_beta">Beta</string>
     <string name="update_channel_alpha">Alpha</string>
     <string name="update_whats_new">What\'s new in %1$s</string>
+    <string name="about_section_open_source">Open source</string>
+    <string name="about_acknowledgements">Acknowledgements</string>
+    <string name="about_acknowledgements_body">Libraries and data this app is built on.</string>
     <string name="about_section_app">App</string>
     <string name="about_section_developer">Developer</string>
     <string name="about_developer_tagline">Built by one person, offline by design.</string>

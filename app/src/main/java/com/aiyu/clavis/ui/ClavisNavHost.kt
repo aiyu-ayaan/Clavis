@@ -38,6 +38,7 @@ import com.aiyu.clavis.feature.lock.LockScreen
 import com.aiyu.clavis.feature.scan.ScanScreen
 import com.aiyu.clavis.feature.settings.ChangePinScreen
 import com.aiyu.clavis.feature.settings.AboutScreen
+import com.aiyu.clavis.feature.settings.AcknowledgementsScreen
 import com.aiyu.clavis.feature.settings.SettingsScreen
 import com.aiyu.clavis.feature.settings.UpdatesScreen
 import com.aiyu.clavis.feature.setup.SetupScreen
@@ -60,6 +61,7 @@ object Routes {
     @Serializable data object ChangePin
     @Serializable data object Updates
     @Serializable data object About
+    @Serializable data object Acknowledgements
     @Serializable data object ResetPin
 }
 
@@ -187,7 +189,12 @@ fun ClavisNavHost(session: SessionViewModel, nav: NavHostController = rememberNa
                     }
                     composable<Routes.About> {
                         CompositionLocalProvider(LocalNavAnimatedScope provides this) {
-                            PredictiveBack(onBack = { nav.popBackStack() }) { AboutScreen(onBack = { nav.popBackStack() }) }
+                            PredictiveBack(onBack = { nav.popBackStack() }) { AboutScreen(onBack = { nav.popBackStack() }, onAcknowledgements = { nav.navigate(Routes.Acknowledgements) }) }
+                        }
+                    }
+                    composable<Routes.Acknowledgements> {
+                        CompositionLocalProvider(LocalNavAnimatedScope provides this) {
+                            PredictiveBack(onBack = { nav.popBackStack() }) { AcknowledgementsScreen(onBack = { nav.popBackStack() }) }
                         }
                     }
                     composable<Routes.ResetPin>(enterTransition = fadeOnly) {

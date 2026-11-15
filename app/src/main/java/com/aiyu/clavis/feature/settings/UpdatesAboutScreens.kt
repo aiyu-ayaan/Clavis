@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.AccountBalance
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.SystemUpdate
@@ -115,7 +116,7 @@ fun UpdatesScreen(onBack: () -> Unit, settingsVm: SettingsViewModel = hiltViewMo
 
 /** Settings > About: app, privacy facts, developer, source. */
 @Composable
-fun AboutScreen(onBack: () -> Unit) {
+fun AboutScreen(onBack: () -> Unit, onAcknowledgements: () -> Unit) {
     val context = LocalContext.current
     val open = { url: String -> context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
     val external = @Composable { Icon(Icons.AutoMirrored.Rounded.OpenInNew, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
@@ -133,6 +134,10 @@ fun AboutScreen(onBack: () -> Unit) {
                 colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                 modifier = Modifier.clickable { open("https://github.com/${Releases.REPOSITORY}") },
             )
+        }
+        Spacer(Modifier.height(16.dp))
+        Group(stringResource(R.string.about_section_open_source)) {
+            Row(Icons.Rounded.Description, stringResource(R.string.about_acknowledgements), stringResource(R.string.about_acknowledgements_body), onClick = onAcknowledgements)
         }
         Spacer(Modifier.height(16.dp))
         Group(stringResource(R.string.about_section_developer)) {
@@ -161,6 +166,46 @@ fun AboutScreen(onBack: () -> Unit) {
                 colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                 modifier = Modifier.clickable { open(PORTFOLIO_URL) },
             )
+        }
+    }
+}
+
+private data class Library(val name: String, val url: String, val license: String)
+
+/** Keep in sync with gradle/libs.versions.toml and the bundled BIN data. Proper names, so not in strings.xml. */
+private val libraries = listOf(
+    Library("Kotlin", "https://github.com/JetBrains/kotlin", "Apache-2.0"),
+    Library("kotlinx.coroutines", "https://github.com/Kotlin/kotlinx.coroutines", "Apache-2.0"),
+    Library("kotlinx.serialization", "https://github.com/Kotlin/kotlinx.serialization", "Apache-2.0"),
+    Library("Jetpack Compose", "https://developer.android.com/jetpack/compose", "Apache-2.0"),
+    Library("Material 3 for Compose", "https://developer.android.com/jetpack/androidx/releases/compose-material3", "Apache-2.0"),
+    Library("AndroidX (Core, Lifecycle, Activity, Fragment, Navigation, DataStore, Splashscreen)", "https://developer.android.com/jetpack/androidx", "Apache-2.0"),
+    Library("AndroidX Room", "https://developer.android.com/jetpack/androidx/releases/room", "Apache-2.0"),
+    Library("AndroidX Biometric", "https://developer.android.com/jetpack/androidx/releases/biometric", "Apache-2.0"),
+    Library("AndroidX Graphics Shapes", "https://developer.android.com/jetpack/androidx/releases/graphics", "Apache-2.0"),
+    Library("CameraX", "https://developer.android.com/jetpack/androidx/releases/camera", "Apache-2.0"),
+    Library("ML Kit Text Recognition", "https://developers.google.com/ml-kit/vision/text-recognition/v2", "ML Kit Terms"),
+    Library("Tink", "https://github.com/tink-crypto/tink-java", "Apache-2.0"),
+    Library("Dagger Hilt", "https://github.com/google/dagger", "Apache-2.0"),
+    Library("BIN List Data (Venelin Kochev)", "https://github.com/venelinkochev/bin-list-data", "CC BY 4.0"),
+)
+
+/** Settings > About > Acknowledgements: open-source libraries and data this app uses. */
+@Composable
+fun AcknowledgementsScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
+    InnerScreen(title = stringResource(R.string.about_acknowledgements), onBack = onBack) {
+        Group(stringResource(R.string.about_section_open_source)) {
+            libraries.forEach { lib ->
+                ListItem(
+                    headlineContent = { Text(lib.name) },
+                    supportingContent = { Text("${lib.license} · ${lib.url.removePrefix("https://")}") },
+                    leadingContent = { Icon(Icons.Rounded.Description, null) },
+                    trailingContent = { Icon(Icons.AutoMirrored.Rounded.OpenInNew, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    modifier = Modifier.clickable { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(lib.url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) },
+                )
+            }
         }
     }
 }
