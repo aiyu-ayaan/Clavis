@@ -64,8 +64,8 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs.findByName("release")
-            // Phones are arm; x86 ML Kit libraries only add megabytes.
-            ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
+            // 64-bit ARM only: the ML Kit OCR library is ~11 MB per ABI. 32-bit-only phones cannot install.
+            ndk { abiFilters += listOf("arm64-v8a") }
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         // Side-by-side dev install, as in Domus.
@@ -84,7 +84,7 @@ android {
 
     packaging {
         resources.excludes += listOf("/META-INF/{AL2.0,LGPL2.1}", "/META-INF/*.version", "/META-INF/*.kotlin_module", "DebugProbesKt.bin", "kotlin-tooling-metadata.json")
-        jniLibs.useLegacyPackaging = false
+        jniLibs.useLegacyPackaging = true // compressed in the APK: smaller download, the native libs are unpacked on install
     }
 
     compileOptions {
