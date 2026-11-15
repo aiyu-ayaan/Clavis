@@ -377,8 +377,9 @@ jobs:
           echo "$perms"
           if printf '%s' "$perms" | grep -q ACCESS_NETWORK_STATE; then echo "::error::ACCESS_NETWORK_STATE is back."; exit 1; fi
           printf '%s' "$perms" | grep -q android.permission.INTERNET || { echo "::error::INTERNET missing; the updater needs it."; exit 1; }
-          "${bt}aapt2" dump xmltree --file res/xml/network_security_config.xml "$apk" > /dev/null \
-            || { echo "::error::network_security_config.xml missing."; exit 1; }
+          # Resource shrinking renames res/xml/*, so check the manifest points at a config.
+          "${bt}aapt2" dump xmltree --file AndroidManifest.xml "$apk" | grep -q networkSecurityConfig \
+            || { echo "::error::networkSecurityConfig missing from the manifest."; exit 1; }
           echo "size: $(du -h "$apk" | cut -f1)"
 
       - uses: actions/upload-artifact@v4
