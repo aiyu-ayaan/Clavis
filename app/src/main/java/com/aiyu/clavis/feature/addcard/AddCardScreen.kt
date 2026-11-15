@@ -88,10 +88,15 @@ import com.aiyu.clavis.ui.mark
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import androidx.compose.runtime.snapshotFlow
+import com.aiyu.clavis.core.card.BinInfo
+import com.aiyu.clavis.security.Bins
+import com.aiyu.clavis.feature.scan.ScanHandoff
 import javax.inject.Inject
 
 @HiltViewModel
-class AddCardViewModel @Inject constructor(saved: SavedStateHandle, private val repo: CardRepository) : ViewModel() {
+class AddCardViewModel @Inject constructor(saved: SavedStateHandle, private val repo: CardRepository, private val bins: Bins) : ViewModel() {
     val editId: String? = saved.get<String>("id")
 
     var number by mutableStateOf("")
@@ -103,16 +108,49 @@ class AddCardViewModel @Inject constructor(saved: SavedStateHandle, private val 
     var notes by mutableStateOf("")
     var type by mutableStateOf(CardType.UNKNOWN)
     var networkOverride by mutableStateOf<CardNetwork?>(null)
+
+    /** From the offline BIN table; bank, type and country follow it until the user edits them. */
+    var bin by mutableStateOf<BinInfo?>(null)
+        private set
+    var issuerAuto by mutableStateOf(false)
+        private set
+    var typeAuto by mutableStateOf(false)
+        private set
+    private var country: String? = null
+
+    fun editIssuer(v: String) { issuer = v; issuerAuto = false }
+    fun pickType(t: CardType) { type = if (type == t) CardType.UNKNOWN else t; typeAuto = false }
+
+    private fun applyBin(info: BinInfo?) {
+        val old = bin
+        bin = info
+        if (info == null) {
+            if (issuerAuto) { issuer = ""; issuerAuto = false }
+            if (typeAuto) { type = CardType.UNKNOWN; typeAuto = false }
+            country = null
+            return
+        }
+        if (info.issuer != null && (issuer.isBlank() || issuerAuto || issuer == old?.issuer)) { issuer = info.issuer!!; issuerAuto = true }
+        if (info.type != CardType.UNKNOWN && (type == CardType.UNKNOWN || typeAuto)) { type = info.type; typeAuto = true }
+        country = info.country
+    }
     var seed by mutableStateOf<Int?>(null)
     var hasSavedCvv by mutableStateOf(false)
     var removeCvv by mutableStateOf(false)
     var showErrors by mutableStateOf(false)
     var saving by mutableStateOf(false)
 
-    val network: CardNetwork get() = networkOverride ?: NetworkDetector.detect(number)
+    val network: CardNetwork get() = networkOverride ?: bin?.network?.takeIf { it != CardNetwork.UNKNOWN } ?: NetworkDetector.detect(number)
     val tintSeed: Int get() = seed ?: defaultSeedFor(network)
 
     init {
+        // Look the BIN up whenever the first six digits change. Runs in memory, nothing leaves the device.
+        viewModelScope.launch {
+            snapshotFlow { number.take(6) }.distinctUntilChanged().collect { prefix ->
+                applyBin(if (prefix.length == 6) bins.lookup(prefix) else null)
+            }
+        }
+        ScanHandoff.take()?.let { r -> number = r.pan; r.expiry?.let { expiry = it }; r.holder?.let { holder = it } }
         if (editId != null) viewModelScope.launch {
             val card = repo.cards.first { !it.isNullOrEmpty() }!!.find { it.id == editId } ?: return@launch
             val r = card.record
@@ -160,6 +198,7 @@ class AddCardViewModel @Inject constructor(saved: SavedStateHandle, private val 
                     network = network,
                     type = type,
                     issuer = issuer.trim().ifEmpty { null },
+                    country = country,
                     colorSeed = tintSeed,
                     notes = notes.trim().ifEmpty { null },
                 ),
@@ -302,14 +341,15 @@ fun AddCardScreen(onBack: () -> Unit, onSaved: (String) -> Unit, previewModifier
             listOf(CardType.CREDIT, CardType.DEBIT, CardType.PREPAID).forEach { t ->
                 FilterChip(
                     selected = vm.type == t,
-                    onClick = { vm.type = if (vm.type == t) CardType.UNKNOWN else t },
+                    onClick = { vm.pickType(t) },
                     label = { Text(stringResource(t.labelRes())) },
                     leadingIcon = if (vm.type == t) { { Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(18.dp)) } } else null,
                 )
             }
         }
         OutlinedTextField(
-            value = vm.issuer, onValueChange = { vm.issuer = it.take(40) },
+            value = vm.issuer, onValueChange = { vm.editIssuer(it.take(40)) },
+            supportingText = if (vm.issuerAuto) { { Text(stringResource(R.string.add_detected_from_number)) } } else null,
             label = { Text(stringResource(R.string.field_bank)) },
             keyboardOptions = textOptions, singleLine = true, modifier = Modifier.fillMaxWidth(),
         )

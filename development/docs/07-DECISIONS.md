@@ -21,7 +21,7 @@ Format: decision, status, reason. Status is **Decided** (default chosen, change 
 | D13 | No PIN recovery | Decided | Any recovery path weakens the vault. |
 | D14 | PCI DSS 3.3.1 stance: private vault of own cards is not a covered entity, warn on CVV save | **Open** | Owner should confirm comfort; legal advice if distributed widely. |
 | D15 | KDF: PBKDF2-HMAC-SHA256, 600,000 iterations (platform `SecretKeyFactory`) | Decided (dev default, owner may switch to Argon2id) | No native dependency; the KDF output is also wrapped under the hardware `K_device`, so offline guessing needs the device. Iteration count is stored per vault, so a later upgrade can re-wrap on next unlock. |
-| D16 | BIN data source and license | **Open** | No clearly permissive 8-digit dataset found. Choose: build own table, license commercial data, or accept 6-digit community data with a curated Indian layer. |
+| D16 | BIN data: BIN List Data (github.com/venelinkochev/bin-list-data), CC BY 4.0, 6-digit, bundled as `core/src/main/assets/bins.bin` | Decided (owner asked for free auto-detection, 2026-11-15) | Free and permissively licensed; 374,788 BINs incl. ~12k Indian (RuPay, HDFC, ICICI, SBI, Axis). Attribution shown in Settings › About. Not used: `binlist/data` (no license). No 8-digit rows; curated Indian layer still open. |
 | D17 | App name and package: `Clavis`, `com.aiyu.clavis` | **Open** | Confirm. Check Play Store name conflicts. |
 | D18 | Encrypted export/import of the vault (passphrase) in v2 | Open | Lets users migrate phones without cloud. |
 | D19 | Autofill service for payment cards in v2 | Open | Removes clipboard need. |

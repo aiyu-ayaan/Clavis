@@ -65,6 +65,8 @@ Findings from research:
 - Community datasets exist (`binlist/data` on GitHub, `smartbindb` on PyPI with an MIT license). None found with a clearly permissive license **and** reliable 8-digit coverage. The binlist repo itself says it is not an official register and use is at the user's risk. Check licenses before bundling.
 - Indian cards matter for this user base: RuPay, SBI, HDFC, ICICI, Axis, etc. Coverage of Indian issuers in free sets is uneven. A small curated, hand-verified Indian issuer table layered over the general table is a pragmatic fix.
 
+Chosen (D16): **BIN List Data** (CC BY 4.0), 6-digit rows with brand, debit/credit/prepaid, issuer and country. `tools/build_bin_table.py` turns the CSV into `core/src/main/assets/bins.bin` (8 bytes per BIN plus issuer and country dictionaries, about 3.4 MB). `BinLookup` binary-searches it in memory. In the add form the bank, type, country and network follow the first six digits until the user edits them. A prepaid category wins over the debit/credit column.
+
 Packaging the table:
 
 - Build step converts the CSV to a compact sorted binary (`bins.bin`) with a prefix index, shipped under `assets/` or `res/raw`.

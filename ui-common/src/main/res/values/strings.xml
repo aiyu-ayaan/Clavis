@@ -232,6 +232,10 @@
     <string name="settings_clipboard_30s">30 seconds</string>
     <string name="settings_clipboard_60s">1 minute</string>
     <string name="settings_clipboard_never">Never</string>
+    <string name="add_detected_from_number">Detected from the card number, offline</string>
+    <string name="add_detected_summary">%1$s · %2$s</string>
+    <string name="settings_bin_data">Card bank data</string>
+    <string name="settings_bin_data_body">BIN List Data by Venelin Kochev, CC BY 4.0. Looked up on this device only.</string>
 
     <!-- Generic -->
     <string name="error_generic">Something went wrong. Try again.</string>

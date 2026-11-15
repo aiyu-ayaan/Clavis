@@ -7,7 +7,7 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 - [x] Product scope, security design, architecture, card intelligence, share/copy, UX docs
 - [x] Gradle project with `:app`, `:ui-common`, `:core`; strings only in `:ui-common`
 - [x] `isLuhnValid` + unit test
-- [ ] **(owner)** Confirm D14 (CVV stance), D15 (KDF, PBKDF2 chosen as default), D16 (BIN data), D17 (name/package), V9 (intro meaning)
+- [ ] **(owner)** Confirm D14 (CVV stance), D15 (KDF, PBKDF2 chosen as default), D17 (name/package), V9 (intro meaning)
 - [ ] Verify V3, V4, V5, V7, V8 from `07-DECISIONS.md`
 
 ## Phase 1 — Foundation
@@ -54,9 +54,9 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 ## Phase 5 — Card intelligence
 
 - [x] `NetworkDetector` data-driven table + tests with published test PANs (V5)
-- [ ] BIN table build script (CSV → `bins.bin`), `BinLookup` longest-prefix (8 → 6) + tests
+- [x] BIN table build script (CSV → `bins.bin`), `BinLookup` (6-digit; 8-digit when data exists) + tests
 - [ ] Curated Indian issuer layer
-- [ ] Detected chips (bank, network, type) editable in the form
+- [x] Detected chips (bank, network, type) editable in the form
 - [ ] Scan: CameraX preview, ML Kit bundled OCR, `CardTextParser`, 3-of-5 stability filter, torch, guide frame
 - [ ] Parser tests from recorded text fixtures (no real card numbers)
 

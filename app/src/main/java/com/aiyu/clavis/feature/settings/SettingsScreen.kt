@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountBalance
 import androidx.compose.material.icons.rounded.Brightness6
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.ContentPasteOff
@@ -165,6 +166,7 @@ fun SettingsScreen(onBack: () -> Unit, onChangePin: () -> Unit, vm: SettingsView
         Group(stringResource(R.string.settings_section_about)) {
             Row(Icons.Rounded.Info, stringResource(R.string.app_name), stringResource(R.string.settings_version, BuildConfig.VERSION_NAME))
             Row(Icons.Rounded.CloudOff, stringResource(R.string.settings_no_internet), stringResource(R.string.settings_no_internet_body))
+            Row(Icons.Rounded.AccountBalance, stringResource(R.string.settings_bin_data), stringResource(R.string.settings_bin_data_body))
         }
         Spacer(Modifier.height(16.dp))
         Group(stringResource(R.string.settings_section_danger)) {
