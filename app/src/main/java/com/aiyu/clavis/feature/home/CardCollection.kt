@@ -153,11 +153,13 @@ fun CardCollection(
     val showRail = grouped && rail.size > 1
     val gutter = PaddingValues(start = 16.dp, end = if (showRail) 44.dp else 16.dp)
     // Entrance plays only while the list first appears. Items composed later by scrolling show at once:
-    // replaying it on a fast fling left invisible gaps in the wallet stack.
-    var entering by remember { mutableStateOf(true) }
+    // replaying it on a fast fling left invisible gaps in the wallet stack. Saveable, so coming back from
+    // a card does not replay it either: the shared card would land, drop to the fade's alpha and flicker.
+    var entered by rememberSaveable { mutableStateOf(false) }
+    val entering = !entered
     LaunchedEffect(Unit) {
         delay(ENTRANCE_WINDOW_MILLIS)
-        entering = false
+        entered = true
     }
 
     val collapsible = layout == CardLayout.WALLET && front != null
