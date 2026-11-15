@@ -42,6 +42,8 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 - [x] `PinPad` component (72 dp keys, haptics, shake, a11y)
 - [x] Lock screen with lockout countdown and auto biometric prompt
 
+- [x] "Forgot PIN?": reset with phone screen lock (K_recovery) or erase (D13 revised)
+
 ## Phase 4 — Cards
 
 - [x] Room schema, `CardEntity`, `CardDao`, repository (ciphertext in, `CardRecord` out)

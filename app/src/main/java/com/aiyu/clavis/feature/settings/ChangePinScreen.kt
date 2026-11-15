@@ -1,5 +1,6 @@
 package com.aiyu.clavis.feature.settings
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,9 +40,14 @@ private enum class PinStep { CURRENT, NEW, CONFIRM, SAVING }
 
 /** Change PIN: current, new, confirm. Re-wraps the DEK only (02-SECURITY.md). */
 @Composable
-fun ChangePinScreen(onBack: () -> Unit, onDone: () -> Unit, vm: ChangePinViewModel = hiltViewModel()) {
+fun ChangePinScreen(
+    onBack: () -> Unit,
+    onDone: () -> Unit,
+    reset: (suspend (String) -> Boolean)? = null, // set after "Forgot PIN": no current PIN asked, no way back
+    vm: ChangePinViewModel = hiltViewModel(),
+) {
     val scope = rememberCoroutineScope()
-    var step by remember { mutableStateOf(PinStep.CURRENT) }
+    var step by remember { mutableStateOf(if (reset != null) PinStep.NEW else PinStep.CURRENT) }
     var digits by remember { mutableStateOf("") }
     var current by remember { mutableStateOf("") }
     var fresh by remember { mutableStateOf("") }
@@ -64,6 +70,10 @@ fun ChangePinScreen(onBack: () -> Unit, onDone: () -> Unit, vm: ChangePinViewMod
             PinStep.CONFIRM -> if (digits != fresh) { fail(mismatch); step = PinStep.NEW } else {
                 step = PinStep.SAVING
                 scope.launch {
+                    if (reset != null) {
+                        if (reset(fresh)) onDone() else { step = PinStep.NEW; fail(wrong) }
+                        return@launch
+                    }
                     when (vm.change(current, fresh)) {
                         UnlockResult.Success -> onDone()
                         is UnlockResult.Wrong -> { step = PinStep.CURRENT; fail(wrong) }
@@ -76,7 +86,8 @@ fun ChangePinScreen(onBack: () -> Unit, onDone: () -> Unit, vm: ChangePinViewMod
         }
     }
 
-    InnerScreen(title = stringResource(R.string.settings_change_pin), onBack = onBack) {
+    if (reset != null) BackHandler { /* a new PIN must be set before anything else */ }
+    InnerScreen(title = stringResource(if (reset != null) R.string.reset_pin_title else R.string.settings_change_pin), onBack = if (reset != null) null else onBack) {
         PinEntry(
             title = stringResource(when (step) { PinStep.CURRENT -> R.string.change_pin_current; PinStep.NEW -> R.string.change_pin_new; else -> R.string.setup_confirm_pin_title }),
             message = error ?: if (step == PinStep.CURRENT) stringResource(R.string.lock_enter_pin) else stringResource(R.string.setup_create_pin_body, PinPolicy.LENGTH),

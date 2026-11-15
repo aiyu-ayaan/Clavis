@@ -27,9 +27,13 @@ Android Keystore (hardware-backed, StrongBox when available, non-exportable)
  └─ K_bio      AES-256-GCM, setUserAuthenticationRequired(true), BIOMETRIC_STRONG,
                invalidated on new enrollment, used through BiometricPrompt.CryptoObject
 
+K_recovery RSA-2048 OAEP, private key needs the phone's screen lock (device credential),
+           invalidated when the screen lock is removed
+
 DEK  (data encryption key, 256-bit random, generated once at setup)
- ├─ wrapped by KEK_pin   = Argon2id(PIN, salt) -> encrypted under K_device
- └─ wrapped by K_bio     (only if biometric enabled)
+ ├─ wrapped by KEK_pin   = PBKDF2(PIN, salt) -> encrypted under K_device
+ ├─ wrapped by K_bio     (only if biometric enabled)
+ └─ wrapped by K_recovery public key (only if the phone has a screen lock; refreshed on unlock)
 ```
 
 - The DEK never touches disk unwrapped. It lives in memory only while the vault is unlocked.
@@ -58,7 +62,7 @@ DEK  (data encryption key, 256-bit random, generated once at setup)
 | Throttling | 5 free attempts, then 30 s, 1 min, 5 min, 15 min, 1 h. Counter persisted and tied to elapsed realtime to resist clock changes. Optional "erase after 10 failures" setting, off by default. |
 | Session | Unlocked session ends on: app backgrounded longer than the timeout (default 30 s, choices: immediately, 30 s, 1 min, 5 min), screen off, or user lock. |
 | Fresh auth | Revealing a full PAN or CVV, copying CVV, and sharing require authentication within the last 60 s. If the session auth is older, prompt again (biometric or PIN). |
-| Forgot PIN | No recovery. This is a feature. The only path is wiping the vault. The UI states this during setup. |
+| Forgot PIN | Two paths (D13): confirm the phone's screen lock to unwrap the DEK with `K_recovery`, then set a new PIN (cards kept); or erase the vault. No other recovery. |
 | Change PIN | Requires the old PIN. Re-wraps the DEK. Data is not re-encrypted. |
 
 ## Screen and surface protection

@@ -34,7 +34,7 @@ Update the matching doc and `TODO.md` in the same commit as any change that alte
 6. **Every clipboard write sets the sensitive flag** and schedules auto-clear.
 7. `FLAG_SECURE` stays on. `allowBackup` stays false.
 8. No hardcoded colors in components; use `MaterialTheme.colorScheme`. Follow Rewire's theme pattern (`../Rewire/app/src/main/java/com/aiyu/rewire/ui/theme/`).
-9. No PIN recovery. Do not add one.
+9. The only PIN recovery is the phone's own screen lock (K_recovery, D13 revised) or erasing the vault. Do not add any other path (no email, cloud, hint or security question).
 
 ## Stack
 

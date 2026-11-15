@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aiyu.clavis.core.crypto.UnlockResult
 import com.aiyu.clavis.core.crypto.Vault
+import com.aiyu.clavis.core.data.CardRepository
 import com.aiyu.clavis.core.settings.Settings
 import com.aiyu.clavis.core.settings.SettingsStore
 import com.aiyu.clavis.security.AuthGate
@@ -17,7 +18,8 @@ import javax.crypto.Cipher
 @HiltViewModel
 class SessionViewModel @Inject constructor(
     private val vault: Vault,
-    settingsStore: SettingsStore,
+    private val settingsStore: SettingsStore,
+    private val repo: CardRepository,
     val gate: AuthGate,
 ) : ViewModel() {
     val state = vault.state
@@ -29,4 +31,16 @@ class SessionViewModel @Inject constructor(
     suspend fun verifyPin(pin: String): UnlockResult = vault.unlockWithPin(pin)
     fun biometricCipher(): Cipher? = vault.biometricUnlockCipher()
     fun verifyBiometric(cipher: Cipher) = vault.unlockWithBiometric(cipher)
+
+    val recoveryAvailable: Boolean get() = vault.recoveryAvailable
+    fun recoveryCipher(): Cipher? = vault.recoveryCipher()
+    fun unlockWithRecovery(cipher: Cipher) = vault.unlockWithRecovery(cipher)
+    suspend fun resetPin(pin: String) = vault.resetPin(pin)
+
+    /** "Forgot PIN" without the phone lock: everything goes, back to the landing. */
+    suspend fun eraseAll() {
+        repo.deleteAll()
+        settingsStore.clear()
+        vault.wipe()
+    }
 }

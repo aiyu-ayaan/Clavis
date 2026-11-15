@@ -59,6 +59,7 @@ import com.aiyu.clavis.core.crypto.PinPolicy
 import com.aiyu.clavis.core.crypto.Vault
 import com.aiyu.clavis.security.authenticate
 import com.aiyu.clavis.security.canUseBiometric
+import com.aiyu.clavis.security.hasSecureLockScreen
 import com.aiyu.clavis.ui.R
 import com.aiyu.clavis.ui.components.ClavisMark
 import com.aiyu.clavis.ui.components.PinEntry
@@ -177,7 +178,7 @@ private fun NoRecoveryNote() {
     Surface(color = MaterialTheme.colorScheme.tertiaryContainer, shape = MaterialTheme.shapes.medium) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Icon(Icons.Rounded.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onTertiaryContainer)
-            Text(stringResource(R.string.setup_no_recovery), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onTertiaryContainer)
+            Text(stringResource(if (LocalContext.current.hasSecureLockScreen()) R.string.setup_no_recovery_v2 else R.string.setup_no_recovery), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onTertiaryContainer)
         }
     }
 }

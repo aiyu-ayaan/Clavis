@@ -44,3 +44,34 @@ suspend fun FragmentActivity.authenticate(cipher: Cipher, subtitle: String = get
         prompt.authenticate(info, BiometricPrompt.CryptoObject(cipher))
         cont.invokeOnCancellation { prompt.cancelAuthentication() }
     }
+
+/** The phone has a PIN, pattern or password lock (needed for "Forgot PIN"). */
+fun Context.hasSecureLockScreen(): Boolean = getSystemService(android.app.KeyguardManager::class.java).isDeviceSecure
+
+/**
+ * Asks for the phone's own screen lock. API 30+: bound to [cipher] as a CryptoObject, which it authorizes.
+ * API 28–29: plain prompt; the caller builds the cipher afterwards (the key allows 30 s after auth). Null on cancel.
+ */
+suspend fun FragmentActivity.confirmScreenLock(cipher: Cipher?): Boolean? =
+    suspendCancellableCoroutine { cont ->
+        val prompt = BiometricPrompt(this, ContextCompat.getMainExecutor(this), object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                if (cont.isActive) cont.resume(true)
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                if (cont.isActive) cont.resume(null)
+            }
+        })
+        val info = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(getString(R.string.recovery_prompt_title))
+            .setSubtitle(getString(R.string.recovery_prompt_subtitle))
+            .setAllowedAuthenticators(
+                if (android.os.Build.VERSION.SDK_INT >= 30) BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                else BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL,
+            )
+            .build()
+        if (cipher != null && android.os.Build.VERSION.SDK_INT >= 30) prompt.authenticate(info, BiometricPrompt.CryptoObject(cipher))
+        else prompt.authenticate(info)
+        cont.invokeOnCancellation { prompt.cancelAuthentication() }
+    }

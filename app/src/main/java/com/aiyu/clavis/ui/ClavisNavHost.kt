@@ -56,6 +56,7 @@ object Routes {
     @Serializable data class Detail(val id: String)
     @Serializable data object Settings
     @Serializable data object ChangePin
+    @Serializable data object ResetPin
 }
 
 private fun NavBackStackEntry.isAny(vararg routes: kotlin.reflect.KClass<*>) = routes.any { destination.hasRoute(it) }
@@ -112,7 +113,11 @@ fun ClavisNavHost(session: SessionViewModel, nav: NavHostController = rememberNa
                     }
                     composable<Routes.Lock>(enterTransition = fadeOnly, exitTransition = fadeOutOnly) {
                         CompositionLocalProvider(LocalNavAnimatedScope provides this) {
-                            LockScreen(session, onUnlocked = { nav.navigate(Routes.Home) { popUpTo(nav.graph.id) { inclusive = true } } })
+                            LockScreen(
+                                session,
+                                onUnlocked = { nav.navigate(Routes.Home) { popUpTo(nav.graph.id) { inclusive = true } } },
+                                onRecovered = { nav.navigate(Routes.ResetPin) { popUpTo(nav.graph.id) { inclusive = true } } },
+                            )
                         }
                     }
                     composable<Routes.Home>(
@@ -169,6 +174,15 @@ fun ClavisNavHost(session: SessionViewModel, nav: NavHostController = rememberNa
                             PredictiveBack(onBack = { nav.popBackStack() }) {
                                 SettingsScreen(onBack = { nav.popBackStack() }, onChangePin = { nav.navigate(Routes.ChangePin) })
                             }
+                        }
+                    }
+                    composable<Routes.ResetPin>(enterTransition = fadeOnly) {
+                        CompositionLocalProvider(LocalNavAnimatedScope provides this) {
+                            ChangePinScreen(
+                                onBack = {},
+                                onDone = { nav.navigate(Routes.Home) { popUpTo(nav.graph.id) { inclusive = true } } },
+                                reset = session::resetPin,
+                            )
                         }
                     }
                     composable<Routes.ChangePin> {

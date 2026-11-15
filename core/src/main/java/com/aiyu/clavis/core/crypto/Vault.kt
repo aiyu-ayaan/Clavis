@@ -32,6 +32,7 @@ private data class VaultFile(
     val iterations: Int,
     val pinBlob: ByteArray,          // K_device( AES-GCM(KEK_pin, DEK) )
     val bioBlob: ByteArray? = null,  // K_bio(DEK), iv || ct
+    val recoveryBlob: ByteArray? = null, // K_recovery.public(DEK), opened only after the phone's screen lock
     val failures: Int = 0,
     val lockUntil: Long = 0,
     val lockDuration: Long = 0,
@@ -117,6 +118,46 @@ class Vault(
         }
     }
 
+    /** "Forgot PIN" with the phone's screen lock is possible: a wrap exists and the key was not invalidated. */
+    val recoveryAvailable: Boolean get() = read()?.recoveryBlob != null
+
+    /** API 30+: cipher for a device-credential BiometricPrompt. Null (and the wrap dropped) after the screen lock was removed. */
+    fun recoveryCipher(): Cipher? = try {
+        keys.recoveryCipher()
+    } catch (_: KeyPermanentlyInvalidatedException) {
+        dropRecovery(); null
+    } catch (_: android.security.keystore.UserNotAuthenticatedException) {
+        null // below API 30: ask for the screen lock first, then call again
+    }
+
+    /** [authorized] came back from the screen-lock prompt. Opens the vault; the caller must then set a new PIN. */
+    fun unlockWithRecovery(authorized: Cipher): Boolean {
+        val f = read() ?: return false
+        val blob = f.recoveryBlob ?: return false
+        return try {
+            val d = authorized.doFinal(blob)
+            write(f.copy(failures = 0, lockUntil = 0, lockDuration = 0))
+            open(d); true
+        } catch (_: GeneralSecurityException) {
+            false
+        }
+    }
+
+    /** New PIN without the old one: only while unlocked (after recovery). Re-wraps the same DEK. */
+    suspend fun resetPin(new: String): Boolean = mutex.withLock {
+        withContext(Dispatchers.Default) {
+            val d = dek ?: return@withContext false
+            val salt = Gcm.randomBytes(16)
+            write(read()!!.copy(salt = salt, iterations = PinKdf.ITERATIONS, pinBlob = wrapForPin(new, salt, PinKdf.ITERATIONS, d)))
+            true
+        }
+    }
+
+    private fun dropRecovery() {
+        read()?.let { write(it.copy(recoveryBlob = null)) }
+        keys.deleteRecoveryKey()
+    }
+
     fun biometricEnrollCipher(): Cipher = keys.newBioEncryptCipher()
 
     fun enableBiometric(authorized: Cipher): Boolean {
@@ -189,7 +230,25 @@ class Vault(
         dek = d
         cipher = VaultCipher(d)
         authAt = clock()
+        refreshRecovery(d)
         _state.value = VaultState.UNLOCKED
+    }
+
+    /** Keeps the screen-lock wrap present and valid; silently skipped when the phone has no secure lock screen. */
+    private fun refreshRecovery(d: ByteArray) {
+        val f = read() ?: return
+        val valid = try {
+            keys.recoveryCipher() != null
+        } catch (_: KeyPermanentlyInvalidatedException) {
+            keys.deleteRecoveryKey(); false
+        } catch (_: android.security.keystore.UserNotAuthenticatedException) {
+            true
+        } catch (_: Exception) {
+            false
+        }
+        if (valid && f.recoveryBlob != null) return
+        val blob = runCatching { keys.recoveryWrap(d) }.getOrNull()
+        if (blob != null || f.recoveryBlob != null) write(f.copy(recoveryBlob = blob))
     }
 
     private fun read(): VaultFile? = try {
