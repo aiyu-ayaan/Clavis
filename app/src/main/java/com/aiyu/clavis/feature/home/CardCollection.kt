@@ -1,5 +1,6 @@
 package com.aiyu.clavis.feature.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -7,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -149,6 +151,7 @@ fun CardCollection(
         }
     }
     val showRail = grouped && rail.size > 1
+    val gutter = PaddingValues(start = 16.dp, end = if (showRail) 44.dp else 16.dp)
     // Entrance plays only while the list first appears. Items composed later by scrolling show at once:
     // replaying it on a fast fling left invisible gaps in the wallet stack.
     var entering by remember { mutableStateOf(true) }
@@ -157,10 +160,18 @@ fun CardCollection(
         entering = false
     }
 
-    Box(modifier.fillMaxSize()) {
+    val collapsible = layout == CardLayout.WALLET && front != null
+    // Back or a tap on empty space puts the forward card back in the stack. Taps on cards are consumed first.
+    BackHandler(enabled = collapsible) { front = null }
+    Box(
+        modifier
+            .fillMaxSize()
+            .then(if (collapsible) Modifier.pointerInput(Unit) { detectTapGestures { front = null } } else Modifier),
+    ) {
         LazyColumn(
             state = listState,
-            contentPadding = PaddingValues(start = 16.dp, end = if (showRail) 44.dp else 16.dp, top = 8.dp, bottom = bottomPadding),
+            // Side gutters live on each item, not here, so sticky headers can span the full width and hide what scrolls under them.
+            contentPadding = PaddingValues(top = 8.dp, bottom = bottomPadding),
             verticalArrangement = Arrangement.spacedBy(
                 when (layout) {
                     CardLayout.CARDS -> 16.dp
@@ -174,7 +185,7 @@ fun CardCollection(
             sections.forEach { section ->
                 if (section.label != null) {
                     stickyHeader(key = "header-${section.label}", contentType = "header") {
-                        SectionHeader(section.label, section.cards.size)
+                        SectionHeader(section.label, section.cards.size, gutter)
                     }
                 }
                 when (layout) {
@@ -183,6 +194,7 @@ fun CardCollection(
                             card,
                             onClick = { onOpenCard(card.id) },
                             modifier = Modifier
+                                .padding(gutter)
                                 .widthIn(max = 520.dp)
                                 .animateItem()
                                 .staggeredEntrance(index, entering)
@@ -190,7 +202,7 @@ fun CardCollection(
                         )
                     }
                     CardLayout.LIST -> items(section.cards, key = { it.id }, contentType = { "row" }) { card ->
-                        CardRow(card, onClick = { onOpenCard(card.id) }, modifier = Modifier.widthIn(max = 520.dp).animateItem())
+                        CardRow(card, onClick = { onOpenCard(card.id) }, modifier = Modifier.padding(gutter).widthIn(max = 520.dp).animateItem())
                     }
                     CardLayout.WALLET -> itemsIndexed(section.cards, key = { _, c -> c.id }, contentType = { _, _ -> "wallet" }) { index, card ->
                         val expanded = index == section.cards.lastIndex || front == card.id
@@ -198,7 +210,7 @@ fun CardCollection(
                             card,
                             expanded = expanded,
                             onClick = { if (expanded) onOpenCard(card.id) else front = card.id },
-                            modifier = Modifier.widthIn(max = 520.dp).animateItem().staggeredEntrance(index, entering),
+                            modifier = Modifier.padding(gutter).widthIn(max = 520.dp).animateItem().staggeredEntrance(index, entering),
                         )
                     }
                 }
@@ -301,19 +313,28 @@ private fun Modifier.peek(fraction: () -> Float, peek: Dp, gap: Dp) = layout { m
     layout(placeable.width, height) { placeable.placeRelative(0, 0) }
 }
 
+/** Opaque and full width, so the card scrolling under it (and its shadow) never shows at the edges. */
 @Composable
-private fun SectionHeader(label: String, count: Int) {
-    Row(
+private fun SectionHeader(label: String, count: Int, gutter: PaddingValues) {
+    Box(
         Modifier
-            .widthIn(max = 520.dp)
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 4.dp, vertical = 10.dp)
-            .semantics(mergeDescendants = true) { heading() },
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(gutter)
+            .padding(vertical = 4.dp),
+        contentAlignment = Alignment.Center,
     ) {
-        Text(label, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-        Text(count.toString(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Row(
+            Modifier
+                .widthIn(max = 520.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 6.dp)
+                .semantics(mergeDescendants = true) { heading() },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(label, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+            Text(count.toString(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }
 

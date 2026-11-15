@@ -59,9 +59,9 @@ Centered mark, 6 PIN dots, number pad, biometric button that prompts automatical
 - Vertical stack of `CardSurface` (the list is a wallet, not a table). Each shows network mark, nickname, masked number, expiry, issuer tint. Overlapping stack when collapsed is optional polish.
 - Tap opens detail with a shared-element transition.
 - **View options** (toolbar, Tune icon, bottom sheet; choice saved in DataStore, non-sensitive):
-  - Layout: **Cards** (full card faces, default), **List** (compact rows: mini card swatch, title, last four, expiry, credit/debit), **Wallet** (overlapping stack showing each card's top strip; tap springs a card forward, tap again opens it; the last card of each section is always fully shown).
+  - Layout: **Cards** (full card faces, default), **List** (compact rows: mini card swatch, title, last four, expiry, credit/debit), **Wallet** (overlapping stack showing each card's top strip; tap springs a card forward, tap again opens it, tap empty space or press back to put it back; the last card of each section is always fully shown).
   - Group by: None, Name (first letter), Network, Bank, Credit or debit, Expiry year. Sections sort A to Z, unknown last, and keep the user's order inside.
-  - Grouped lists work like a contacts app: sticky section headers and an index rail on the right (tap or drag to jump, haptic tick per section). The rail hides when there is one section.
+  - Grouped lists work like a contacts app: full-width opaque sticky section headers and an index rail on the right (tap or drag to jump, haptic tick per section). The rail hides when there is one section.
 - Empty state: expressive illustration, "Add your first card", primary button.
 - FAB menu: Scan card, Enter manually.
 
