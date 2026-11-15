@@ -286,11 +286,8 @@ fun AddCardScreen(onBack: () -> Unit, onSaved: (String) -> Unit, previewModifier
                 visualTransformation = ExpiryTransformation,
                 keyboardOptions = noLearning,
                 isError = vm.expiryError != null,
-                supportingText = when {
-                    vm.expiryError != null -> { { ErrorText(vm.expiryError!!) } }
-                    vm.expired -> { { Text(stringResource(R.string.error_expiry_past)) } }
-                    else -> null
-                },
+                supportingText = vm.expiryError?.let { e -> { ErrorText(e) } }
+                    ?: if (vm.expired) { { Text(stringResource(R.string.error_expiry_past)) } } else null,
                 singleLine = true,
                 modifier = Modifier.weight(1f).widthIn(min = 140.dp).focusRequester(expiryFocus),
             )

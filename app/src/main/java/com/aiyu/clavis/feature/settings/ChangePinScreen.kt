@@ -79,7 +79,7 @@ fun ChangePinScreen(onBack: () -> Unit, onDone: () -> Unit, vm: ChangePinViewMod
     InnerScreen(title = stringResource(R.string.settings_change_pin), onBack = onBack) {
         PinEntry(
             title = stringResource(when (step) { PinStep.CURRENT -> R.string.change_pin_current; PinStep.NEW -> R.string.change_pin_new; else -> R.string.setup_confirm_pin_title }),
-            message = error ?: stringResource(R.string.setup_create_pin_body, PinPolicy.LENGTH),
+            message = error ?: if (step == PinStep.CURRENT) stringResource(R.string.lock_enter_pin) else stringResource(R.string.setup_create_pin_body, PinPolicy.LENGTH),
             isError = error != null,
             errorTick = tick,
             entered = digits.length,

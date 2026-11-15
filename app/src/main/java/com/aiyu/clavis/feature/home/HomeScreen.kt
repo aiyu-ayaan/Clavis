@@ -136,16 +136,18 @@ fun HomeScreen(
             )
         },
     ) { padding ->
+        // Captured once: locking nulls the list while this screen is still animating out.
+        val list = cards
         when {
-            cards == null -> Unit
-            cards!!.isEmpty() -> EmptyState(Modifier.padding(padding), onAddManual, onScan)
+            list == null -> Unit
+            list.isEmpty() -> EmptyState(Modifier.padding(padding), onAddManual, onScan)
             else -> LazyColumn(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding() + 8.dp, bottom = padding.calculateBottomPadding() + 120.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize(),
             ) {
-                itemsIndexed(cards!!, key = { _, c -> c.id }) { index, card ->
+                itemsIndexed(list, key = { _, c -> c.id }) { index, card ->
                     val r = card.record
                     CardSurface(
                         number = maskPan(r.pan, r.network),
