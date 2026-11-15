@@ -7,14 +7,14 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 - [x] Product scope, security design, architecture, card intelligence, share/copy, UX docs
 - [x] Gradle project with `:app`, `:ui-common`, `:core`; strings only in `:ui-common`
 - [x] `isLuhnValid` + unit test
-- [ ] **(owner)** Confirm D14 (CVV stance), D15 (KDF), D16 (BIN data), D17 (name/package), V9 (intro meaning)
+- [ ] **(owner)** Confirm D14 (CVV stance), D15 (KDF, PBKDF2 chosen as default), D16 (BIN data), D17 (name/package), V9 (intro meaning)
 - [ ] Verify V3, V4, V5, V7, V8 from `07-DECISIONS.md`
 
 ## Phase 1 — Foundation
 
 - [ ] Brand: color seed, tonal palette, launcher icon (adaptive + monochrome), splash mark
 - [ ] `ui-common`: `Motion.kt` + `rememberReducedMotion`, `ScreenHeader`, `InnerScreen`, predictive back (port from Rewire)
-- [ ] Add Hilt, Room, DataStore, Navigation Compose to the catalog use sites
+- [x] Add Hilt, Room, DataStore, Navigation Compose to the catalog use sites
 - [ ] `dev` / `prod` flavors, DEV badge
 - [ ] `NavHost` skeleton with all routes from `03-ARCHITECTURE.md`
 - [ ] `FLAG_SECURE`, `setRecentsScreenshotEnabled(false)` (API 33+), sensitive-content flag (after V3)
@@ -22,16 +22,16 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 
 ## Phase 2 — Vault and lock
 
-- [ ] `KeyManager`: Keystore `K_device`, `K_bio` (StrongBox when available)
-- [ ] `PinKdf` (Argon2id or PBKDF2 per D15) + tests
-- [ ] DEK generation, wrap/unwrap for PIN and biometric paths
+- [x] `KeyManager`: Keystore `K_device`, `K_bio` (StrongBox when available)
+- [x] `PinKdf` (Argon2id or PBKDF2 per D15) + tests
+- [x] DEK generation, wrap/unwrap for PIN and biometric paths
 - [ ] `VaultSession` (Locked/Unlocked), auto-lock on stop timeout and screen off
 - [ ] `AuthGate.requireFresh(60 s)`
-- [ ] Throttle schedule persisted against elapsed realtime + tests
+- [x] Throttle schedule persisted against elapsed realtime + tests
 - [ ] Optional wipe after 10 failures
 - [ ] Biometric enroll/invalidations handling (fallback to PIN, re-enable flow)
-- [ ] Change PIN (re-wrap only), erase vault
-- [ ] Tink AEAD wrapper with AAD = id + field + schema version + tests (round trip, AAD mismatch)
+- [x] Change PIN (re-wrap only), erase vault
+- [x] Tink AEAD wrapper with AAD = id + field + schema version + tests (round trip, AAD mismatch)
 
 ## Phase 3 — Onboarding and lock UI
 
@@ -42,8 +42,8 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 
 ## Phase 4 — Cards
 
-- [ ] Room schema, `CardEntity`, `CardDao`, repository (ciphertext in, `CardRecord` out)
-- [ ] `CardRecord` serialization + schema versioning
+- [x] Room schema, `CardEntity`, `CardDao`, repository (ciphertext in, `CardRecord` out)
+- [x] `CardRecord` serialization + schema versioning
 - [ ] Home: collapsing large top bar, `CardSurface` list, empty state, FAB menu
 - [ ] Add card (manual): live preview, grouping per network, Luhn, expiry validation, CVV optional with warning
 - [ ] Card detail: mask/reveal with 20 s timer, edit, delete with fresh auth
@@ -51,7 +51,7 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 
 ## Phase 5 — Card intelligence
 
-- [ ] `NetworkDetector` data-driven table + tests with published test PANs (V5)
+- [x] `NetworkDetector` data-driven table + tests with published test PANs (V5)
 - [ ] BIN table build script (CSV → `bins.bin`), `BinLookup` longest-prefix (8 → 6) + tests
 - [ ] Curated Indian issuer layer
 - [ ] Detected chips (bank, network, type) editable in the form

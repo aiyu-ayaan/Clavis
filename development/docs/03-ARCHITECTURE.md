@@ -60,7 +60,7 @@ app/    com.aiyu.clavis
 
 ```
 CardEntity (Room)
-  id: Long (PK)
+  id: String (PK, random UUID; part of the AEAD AAD, see D20)
   createdAt, updatedAt: Long
   sortKey: Int
   payload: ByteArray        // AEAD(CardRecord)
