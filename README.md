@@ -1,4 +1,4 @@
-<img src="res/logo.svg" alt="Clavis logo" width="72" />
+<img src="res/logo.svg" alt="Clavis logo" width="96" />
 
 # Clavis
 
