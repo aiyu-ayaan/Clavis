@@ -24,6 +24,7 @@ dependencies {
     api(libs.compose.material.icons.extended)
     api(libs.androidx.graphics.shapes)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.compose)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.tooling.preview)
 }

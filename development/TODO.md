@@ -12,8 +12,9 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 
 ## Phase 1 — Foundation
 
-- [ ] Brand: color seed, tonal palette, launcher icon (adaptive + monochrome), splash mark
-- [ ] `ui-common`: `Motion.kt` + `rememberReducedMotion`, `ScreenHeader`, `InnerScreen`, predictive back (port from Rewire)
+- [x] Brand: color seed (navy #1E3A5F + emerald tertiary), tonal palette
+- [ ] Brand: launcher icon (adaptive + monochrome), splash mark
+- [x] `ui-common`: `Motion.kt` + `rememberReducedMotion`, `InnerScreen`, predictive back, shared-transition helpers (port from Rewire)
 - [x] Add Hilt, Room, DataStore, Navigation Compose to the catalog use sites
 - [ ] `dev` / `prod` flavors, DEV badge
 - [ ] `NavHost` skeleton with all routes from `03-ARCHITECTURE.md`
@@ -37,7 +38,7 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 
 - [ ] Intro pager (3 pages, expressive illustrations)
 - [ ] Security setup stepper: create PIN, confirm PIN, optional biometric
-- [ ] `PinPad` component (72 dp keys, haptics, shake, a11y)
+- [x] `PinPad` component (72 dp keys, haptics, shake, a11y)
 - [ ] Lock screen with lockout countdown and auto biometric prompt
 
 ## Phase 4 — Cards
