@@ -50,6 +50,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -123,6 +124,7 @@ fun HomeScreen(
     val cards by vm.cards.collectAsStateWithLifecycle()
     val view by vm.view.collectAsStateWithLifecycle()
     var viewOptions by rememberSaveable { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     // Hoisted above the null/empty branches so a reload or detail round-trip keeps the scroll position.
     val listState = rememberLazyListState()
@@ -186,8 +188,9 @@ fun HomeScreen(
         ViewOptionsSheet(
             layout = v.layout,
             grouping = v.grouping,
-            onLayout = vm::setLayout,
-            onGrouping = vm::setGrouping,
+            // A new arrangement starts at the top; the old scroll index points somewhere else in it.
+            onLayout = { vm.setLayout(it); scope.launch { listState.scrollToItem(0) } },
+            onGrouping = { vm.setGrouping(it); scope.launch { listState.scrollToItem(0) } },
             onDismiss = { viewOptions = false },
         )
     }

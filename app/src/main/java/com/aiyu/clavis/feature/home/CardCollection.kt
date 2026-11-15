@@ -149,6 +149,13 @@ fun CardCollection(
         }
     }
     val showRail = grouped && rail.size > 1
+    // Entrance plays only while the list first appears. Items composed later by scrolling show at once:
+    // replaying it on a fast fling left invisible gaps in the wallet stack.
+    var entering by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        delay(ENTRANCE_WINDOW_MILLIS)
+        entering = false
+    }
 
     Box(modifier.fillMaxSize()) {
         LazyColumn(
@@ -178,7 +185,7 @@ fun CardCollection(
                             modifier = Modifier
                                 .widthIn(max = 520.dp)
                                 .animateItem()
-                                .staggeredEntrance(index)
+                                .staggeredEntrance(index, entering)
                                 .sharedBoundsOrSelf(SharedKeys.card(card.id), MaterialTheme.shapes.extraLarge),
                         )
                     }
@@ -191,7 +198,7 @@ fun CardCollection(
                             card,
                             expanded = expanded,
                             onClick = { if (expanded) onOpenCard(card.id) else front = card.id },
-                            modifier = Modifier.widthIn(max = 520.dp).animateItem().staggeredEntrance(index),
+                            modifier = Modifier.widthIn(max = 520.dp).animateItem().staggeredEntrance(index, entering),
                         )
                     }
                 }
@@ -353,10 +360,17 @@ private fun SectionRail(letters: List<String>, active: Int, onJump: (Int) -> Uni
     }
 }
 
-/** Rises and fades in, each card 45 ms after the one above (stagger-sequence). Once per composition. */
+/** Long enough for the first screenful to start its stagger (8 steps of 45 ms). */
+private const val ENTRANCE_WINDOW_MILLIS = 500L
+
+/**
+ * Rises and fades in, each card 45 ms after the one above (stagger-sequence). Once per composition,
+ * and only if [enabled] when the item is first composed.
+ */
 @Composable
-fun Modifier.staggeredEntrance(index: Int): Modifier {
-    if (rememberReducedMotion()) return this
+fun Modifier.staggeredEntrance(index: Int, enabled: Boolean): Modifier {
+    val animate = remember { enabled }
+    if (!animate || rememberReducedMotion()) return this
     val progress = remember { Animatable(0f) }
     val spec = MaterialTheme.motionScheme.slowSpatialSpec<Float>()
     LaunchedEffect(Unit) {
