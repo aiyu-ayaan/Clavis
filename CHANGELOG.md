@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.0.1-alpha.2](https://github.com/aiyu-ayaan/Clavis/compare/v0.0.1-alpha.1...v0.0.1-alpha.2) (2026-11-15)
+
+### Features
+
+* Acknowledgements page under About
+* Separate Updates screen with alpha/beta/stable channel, About screen with developer section
+* Card faces in bank colours, with a bank/app colour picker
+* Bank colour themes for card art, with distinct variants for cards from the same bank
+* View options with cards, list and wallet layouts, grouping and a contacts-style index rail
+* Card grouping and layout preferences for the home view
+
+### Bug fixes
+
+* No entrance replay when returning from a card, so the shared card does not flicker on landing
+* Full-width sticky headers hide cards scrolling under them; wallet card collapses on empty-space tap or back
+* No entrance replay on fast scroll (wallet gaps), new layout or grouping starts at the top
+
+### Other changes
+
+* Release next alpha
+* Add launch video and README gif
+* Dev and prod flavors, DEV badge on home, CI releases prodRelease
+* Test PANs from TempCards.md and test PIN 134679 for QA
+
 ## 0.0.1-alpha.1 (2026-11-15)
 
 ### Features
