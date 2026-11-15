@@ -73,14 +73,13 @@ import com.aiyu.clavis.core.model.Card
 import com.aiyu.clavis.ui.R
 import com.aiyu.clavis.ui.components.CardSurface
 import com.aiyu.clavis.ui.components.SharedKeys
-import com.aiyu.clavis.ui.components.colors
 import com.aiyu.clavis.ui.components.sharedBoundsOrSelf
 import com.aiyu.clavis.ui.labelRes
 import com.aiyu.clavis.ui.mark
 import com.aiyu.clavis.ui.maskedDescription
 import com.aiyu.clavis.ui.theme.ClavisMotion
 import com.aiyu.clavis.ui.theme.rememberReducedMotion
-import com.aiyu.clavis.ui.tint
+import com.aiyu.clavis.ui.faceStyle
 import com.aiyu.clavis.ui.title
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -236,6 +235,7 @@ fun CardCollection(
 @Composable
 private fun CardFace(card: Card, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val r = card.record
+    val face = r.faceStyle()
     CardSurface(
         number = maskPan(r.pan, r.network),
         holder = r.holderName,
@@ -243,7 +243,8 @@ private fun CardFace(card: Card, onClick: () -> Unit, modifier: Modifier = Modif
         networkMark = r.network.mark(),
         validThruLabel = stringResource(R.string.detail_valid_thru),
         description = r.maskedDescription(),
-        tint = r.tint,
+        colors = face.colors,
+        pattern = face.pattern,
         title = r.title(),
         onClick = onClick,
         modifier = modifier,
@@ -254,7 +255,7 @@ private fun CardFace(card: Card, onClick: () -> Unit, modifier: Modifier = Modif
 @Composable
 private fun CardRow(card: Card, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val r = card.record
-    val colors = r.tint.colors()
+    val colors = r.faceStyle().colors
     val description = r.maskedDescription()
     ListItem(
         headlineContent = { Text(r.title(), maxLines = 1, overflow = TextOverflow.Ellipsis) },

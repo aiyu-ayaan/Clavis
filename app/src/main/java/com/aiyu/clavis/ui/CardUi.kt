@@ -7,7 +7,12 @@ import com.aiyu.clavis.core.card.CardNetwork
 import com.aiyu.clavis.core.card.CardType
 import com.aiyu.clavis.core.card.lastFour
 import com.aiyu.clavis.core.model.CardRecord
+import com.aiyu.clavis.core.card.ART_VARIANTS
+import com.aiyu.clavis.core.card.artBase
+import com.aiyu.clavis.ui.components.CardColors
 import com.aiyu.clavis.ui.components.CardTint
+import com.aiyu.clavis.ui.components.colors
+import com.aiyu.clavis.ui.theme.cardArtColors
 
 @StringRes
 fun CardNetwork.labelRes(): Int = when (this) {
@@ -40,7 +45,17 @@ fun CardType.labelRes(): Int = when (this) {
     CardType.UNKNOWN -> R.string.type_unknown
 }
 
-val CardRecord.tint: CardTint get() = CardTint.entries[colorSeed.mod(CardTint.entries.size)]
+/** What the card face is painted with: colours plus the ring pattern. */
+data class FaceStyle(val colors: CardColors, val pattern: Int)
+
+/** Bank colour variant when [artVariant] is set (D25), else the app-theme tint picked by [colorSeed]. */
+@Composable
+fun faceStyle(issuer: String?, network: CardNetwork, artVariant: Int?, colorSeed: Int): FaceStyle =
+    if (artVariant == null) FaceStyle(CardTint.entries[colorSeed.mod(CardTint.entries.size)].colors(), 0)
+    else FaceStyle(cardArtColors(artBase(issuer, network), artVariant), artVariant.mod(ART_VARIANTS))
+
+@Composable
+fun CardRecord.faceStyle(): FaceStyle = faceStyle(issuer, network, artVariant, colorSeed)
 
 fun defaultSeedFor(network: CardNetwork): Int = when (network) {
     CardNetwork.VISA, CardNetwork.DISCOVER -> CardTint.PRIMARY

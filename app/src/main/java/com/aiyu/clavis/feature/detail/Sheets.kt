@@ -68,9 +68,8 @@ import com.aiyu.clavis.feature.share.ShareRenderer
 import com.aiyu.clavis.feature.share.ShareStyle
 import com.aiyu.clavis.feature.share.Sharer
 import com.aiyu.clavis.ui.R
-import com.aiyu.clavis.ui.components.colors
 import com.aiyu.clavis.ui.mark
-import com.aiyu.clavis.ui.tint
+import com.aiyu.clavis.ui.faceStyle
 import com.aiyu.clavis.ui.title
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -133,7 +132,7 @@ fun ShareSheet(card: Card, vm: DetailViewModel, onDismiss: () -> Unit) {
     var options by remember { mutableStateOf(ShareOptions()) }
     var cvv by remember { mutableStateOf<String?>(null) }
     val r = card.record
-    val cardColors = r.tint.colors()
+    val cardColors = r.faceStyle().colors
     val scheme = MaterialTheme.colorScheme
     val colors = ShareColors(cardColors.container.toArgb(), cardColors.content.toArgb(), scheme.surface.toArgb(), scheme.onSurface.toArgb(), scheme.onSurfaceVariant.toArgb())
     val text = shareText(options.includeCvv, options.includeHolder)

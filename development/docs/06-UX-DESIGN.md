@@ -80,7 +80,7 @@ Sections: **Security** (change PIN, biometric toggle, auto-lock delay, wipe vaul
 
 ## Card surface spec
 
-- Aspect ratio 1.586:1, `extraLarge` shape, tonal gradient from the issuer or network color derived through the color scheme (no raw hex in components).
+- Aspect ratio 1.586:1, `extraLarge` shape, tonal gradient. Colour is card art (D25): the bank's base colour (else the network's) in one of four variants (classic, deep, light, graphite), each with its own ring layout, derived in `ui-common/theme/CardArt.kt` with white or ink text by contrast. These stay fixed across light/dark like a real card. A card can instead use an app-theme tint (scheme roles). The add/edit form shows both as two swatch rows: "Bank colors" and "App colors". No raw hex in components.
 - Content: network mark (top right), chip glyph, grouped number, `VALID THRU` and expiry, holder. Nickname above the number when set.
 - Masked state: groups 1–3 as bullets, group 4 shown. Amex groups 4-6-5.
 - Elevated only on press. Uses the surface-container tonal system, not heavy shadows.

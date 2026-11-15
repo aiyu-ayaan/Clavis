@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -81,6 +83,10 @@ import com.aiyu.clavis.core.model.CardRecord
 import com.aiyu.clavis.ui.R
 import com.aiyu.clavis.ui.components.CardSurface
 import com.aiyu.clavis.ui.components.CardTint
+import com.aiyu.clavis.ui.faceStyle
+import com.aiyu.clavis.ui.theme.cardArtColors
+import com.aiyu.clavis.core.card.artBase
+import com.aiyu.clavis.core.card.nextArtVariant
 import com.aiyu.clavis.ui.components.InnerScreen
 import com.aiyu.clavis.ui.components.colors
 import com.aiyu.clavis.ui.defaultSeedFor
@@ -144,6 +150,16 @@ class AddCardViewModel @Inject constructor(saved: SavedStateHandle, private val 
     val network: CardNetwork get() = networkOverride ?: bin?.network?.takeIf { it != CardNetwork.UNKNOWN } ?: NetworkDetector.detect(number)
     val tintSeed: Int get() = seed ?: defaultSeedFor(network)
 
+    /** Bank colour (D25) unless the user picked an app-theme tint. Defaults to the variant least used by the same bank. */
+    var useTheme by mutableStateOf(false)
+        private set
+    private var art by mutableStateOf<Int?>(null)
+    private var others by mutableStateOf(emptyList<Triple<String?, CardNetwork, Int?>>())
+    val artVariant: Int? get() = if (useTheme) null else art ?: nextArtVariant(others, issuer.trim().ifEmpty { null }, network)
+
+    fun pickArt(v: Int) { art = v; useTheme = false }
+    fun pickTint(i: Int) { seed = i; useTheme = true }
+
     init {
         // Look the BIN up whenever the first six digits change. Runs in memory, nothing leaves the device.
         viewModelScope.launch {
@@ -152,12 +168,16 @@ class AddCardViewModel @Inject constructor(saved: SavedStateHandle, private val 
             }
         }
         ScanHandoff.take()?.let { r -> number = r.pan; r.expiry?.let { expiry = it }; r.holder?.let { holder = it } }
+        viewModelScope.launch {
+            others = repo.cards.first { it != null }!!.filter { it.id != editId }.map { Triple(it.record.issuer, it.record.network, it.record.artVariant) }
+        }
         if (editId != null) viewModelScope.launch {
             val card = repo.cards.first { !it.isNullOrEmpty() }!!.find { it.id == editId } ?: return@launch
             val r = card.record
             number = r.pan; expiry = "%02d%02d".format(r.expiryMonth, r.expiryYear % 100); holder = r.holderName
             nickname = r.nickname.orEmpty(); issuer = r.issuer.orEmpty(); notes = r.notes.orEmpty(); type = r.type
             networkOverride = r.network.takeIf { it != NetworkDetector.detect(r.pan) }; seed = r.colorSeed
+            if (r.artVariant == null) useTheme = true else art = r.artVariant
             hasSavedCvv = card.hasCvv
         }
     }
@@ -202,6 +222,7 @@ class AddCardViewModel @Inject constructor(saved: SavedStateHandle, private val 
                     country = country,
                     colorSeed = tintSeed,
                     notes = notes.trim().ifEmpty { null },
+                    artVariant = artVariant,
                 ),
                 cvv = when {
                     cvv.isNotEmpty() -> cvv
@@ -223,7 +244,6 @@ fun AddCardScreen(onBack: () -> Unit, onSaved: (String) -> Unit, previewModifier
     val network = vm.network
     var cvvVisible by remember { mutableStateOf(false) }
     val noLearning = KeyboardOptions(autoCorrectEnabled = false, keyboardType = KeyboardType.NumberPassword, imeAction = ImeAction.Next)
-    val tints = CardTint.entries
     val expiryFocus = remember { FocusRequester() }
     val cvvFocus = remember { FocusRequester() }
     val holderFocus = remember { FocusRequester() }
@@ -246,6 +266,7 @@ fun AddCardScreen(onBack: () -> Unit, onSaved: (String) -> Unit, previewModifier
             }
         },
     ) {
+        val face = faceStyle(vm.issuer.trim().ifEmpty { null }, network, vm.artVariant, vm.tintSeed)
         CardSurface(
             number = formatPan(vm.number.padEnd(previewLength(network, vm.number.length), '•'), network),
             holder = vm.holder.ifBlank { stringResource(R.string.add_holder_placeholder) },
@@ -253,12 +274,13 @@ fun AddCardScreen(onBack: () -> Unit, onSaved: (String) -> Unit, previewModifier
             networkMark = network.mark(),
             validThruLabel = stringResource(R.string.detail_valid_thru),
             description = stringResource(R.string.add_preview_description),
-            tint = tints[vm.tintSeed.mod(tints.size)],
+            colors = face.colors,
+            pattern = face.pattern,
             title = vm.nickname.ifBlank { vm.issuer },
             modifier = previewModifier,
         )
         Spacer(Modifier.height(12.dp))
-        TintPicker(selected = vm.tintSeed.mod(tints.size), onSelect = { vm.seed = it })
+        ColorPicker(vm)
         Spacer(Modifier.height(16.dp))
 
         OutlinedTextField(
@@ -398,30 +420,48 @@ private fun NetworkChip(network: CardNetwork, onPick: (CardNetwork?) -> Unit) {
     }
 }
 
+/** Bank colours (four variants of the bank's colour, D25) above the app-theme tints. One selection across both rows. */
 @Composable
-private fun TintPicker(selected: Int, onSelect: (Int) -> Unit) {
-    val names = listOf<Int>(R.string.tint_primary, R.string.tint_tertiary, R.string.tint_secondary, R.string.tint_night, R.string.tint_soft)
-    Text(stringResource(R.string.add_color), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    // Swatches share the width evenly, so the row never squeezes its label (dense screens, big fonts).
-    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth().widthIn(max = 360.dp), verticalAlignment = Alignment.CenterVertically) {
-        CardTint.entries.forEachIndexed { i, tint ->
-            val name = stringResource(names[i])
-            Box(
-                Modifier
-                    .size(48.dp)
-                    .selectable(selected = i == selected, role = Role.RadioButton, onClick = { onSelect(i) })
-                    .semantics { contentDescription = name },
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(
-                    Modifier
-                        .size(32.dp)
-                        .then(if (i == selected) Modifier.border(BorderStroke(3.dp, MaterialTheme.colorScheme.onSurface), CircleShape) else Modifier)
-                        .padding(if (i == selected) 5.dp else 0.dp)
-                        .background(tint.colors().container, CircleShape),
-                )
-            }
+private fun ColorPicker(vm: AddCardViewModel) {
+    val base = artBase(vm.issuer.trim().ifEmpty { null }, vm.network)
+    val artNames = listOf(R.string.art_classic, R.string.art_deep, R.string.art_light, R.string.art_graphite)
+    val tintNames = listOf(R.string.tint_primary, R.string.tint_tertiary, R.string.tint_secondary, R.string.tint_night, R.string.tint_soft)
+    Text(stringResource(R.string.add_color_bank), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    SwatchRow {
+        artNames.forEachIndexed { i, name ->
+            Swatch(cardArtColors(base, i).container, stringResource(name), selected = vm.artVariant == i, onClick = { vm.pickArt(i) })
         }
+    }
+    Spacer(Modifier.height(8.dp))
+    Text(stringResource(R.string.add_color_theme), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    SwatchRow {
+        CardTint.entries.forEachIndexed { i, tint ->
+            Swatch(tint.colors().container, stringResource(tintNames[i]), selected = vm.useTheme && vm.tintSeed.mod(CardTint.entries.size) == i, onClick = { vm.pickTint(i) })
+        }
+    }
+}
+
+/** Swatches share the width evenly, so the row never squeezes its label (dense screens, big fonts). */
+@Composable
+private fun SwatchRow(content: @Composable RowScope.() -> Unit) =
+    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth().widthIn(max = 360.dp), verticalAlignment = Alignment.CenterVertically, content = content)
+
+@Composable
+private fun Swatch(color: Color, name: String, selected: Boolean, onClick: () -> Unit) {
+    Box(
+        Modifier
+            .size(48.dp)
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .semantics { contentDescription = name },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            Modifier
+                .size(32.dp)
+                .then(if (selected) Modifier.border(BorderStroke(3.dp, MaterialTheme.colorScheme.onSurface), CircleShape) else Modifier)
+                .padding(if (selected) 5.dp else 0.dp)
+                .background(color, CircleShape),
+        )
     }
 }
 

@@ -87,7 +87,6 @@ import com.aiyu.clavis.ui.mark
 import com.aiyu.clavis.ui.maskedDescription
 import com.aiyu.clavis.ui.theme.ClavisMotion
 import com.aiyu.clavis.ui.theme.rememberReducedMotion
-import com.aiyu.clavis.ui.tint
 import com.aiyu.clavis.ui.title
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay

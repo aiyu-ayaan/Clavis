@@ -75,7 +75,7 @@ import com.aiyu.clavis.ui.components.sharedBoundsOrSelf
 import com.aiyu.clavis.ui.labelRes
 import com.aiyu.clavis.ui.mark
 import com.aiyu.clavis.ui.maskedDescription
-import com.aiyu.clavis.ui.tint
+import com.aiyu.clavis.ui.faceStyle
 import com.aiyu.clavis.ui.title
 import kotlinx.coroutines.launch
 
@@ -136,6 +136,7 @@ fun CardDetailScreen(onBack: () -> Unit, onEdit: (String) -> Unit, vm: DetailVie
             IconButton(onClick = { onEdit(c.id) }) { Icon(Icons.Rounded.Edit, contentDescription = stringResource(R.string.action_edit)) }
         },
     ) {
+        val face = r.faceStyle()
         CardSurface(
             number = if (vm.revealed) formatPan(r.pan, r.network) else maskPan(r.pan, r.network),
             holder = r.holderName,
@@ -143,7 +144,8 @@ fun CardDetailScreen(onBack: () -> Unit, onEdit: (String) -> Unit, vm: DetailVie
             networkMark = r.network.mark(),
             validThruLabel = stringResource(R.string.detail_valid_thru),
             description = r.maskedDescription(),
-            tint = r.tint,
+            colors = face.colors,
+            pattern = face.pattern,
             title = r.title(),
             modifier = Modifier.sharedBoundsOrSelf(SharedKeys.card(c.id), MaterialTheme.shapes.extraLarge),
         )

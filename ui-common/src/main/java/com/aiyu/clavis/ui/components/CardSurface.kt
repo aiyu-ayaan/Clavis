@@ -61,6 +61,14 @@ fun CardTint.colors(): CardColors {
 
 const val CARD_RATIO = 1.586f
 
+/** Ring layouts (x, y, radius twice, as fractions of the card), one per card-art variant so same-colour cards differ. */
+private val RINGS = listOf(
+    floatArrayOf(1.02f, -0.05f, 0.55f, 0.92f, 1.1f, 0.38f),
+    floatArrayOf(-0.1f, 1.05f, 0.6f, 1.05f, 0.15f, 0.3f),
+    floatArrayOf(0.5f, -0.65f, 0.75f, 1.1f, 1.2f, 0.45f),
+    floatArrayOf(0.12f, -0.2f, 0.45f, 0.85f, 1.25f, 0.6f),
+)
+
 /**
  * The card face (06-UX-DESIGN.md card surface spec): ID-1 ratio, extraLarge shape, tonal gradient, chip glyph,
  * grouped number, holder and expiry. Grows taller instead of clipping at large font scales.
@@ -74,12 +82,13 @@ fun CardSurface(
     networkMark: String,
     validThruLabel: String,
     description: String,
-    tint: CardTint,
+    colors: CardColors,
     modifier: Modifier = Modifier,
+    pattern: Int = 0,
     title: String? = null,
     onClick: (() -> Unit)? = null,
 ) {
-    val colors = tint.colors()
+    val rings = RINGS[pattern.mod(RINGS.size)]
     val shape = MaterialTheme.shapes.extraLarge
     BoxWithConstraints(modifier.fillMaxWidth()) {
         val minHeight = maxWidth / CARD_RATIO
@@ -91,8 +100,8 @@ fun CardSurface(
                 .background(Brush.linearGradient(listOf(colors.container, lerp(colors.container, colors.content, 0.14f))))
                 .drawBehind {
                     // Two soft rings: depth without shadows, drawn in the content color at low alpha.
-                    drawCircle(colors.content.copy(alpha = 0.07f), radius = size.width * 0.55f, center = Offset(size.width * 1.02f, size.height * -0.05f))
-                    drawCircle(colors.content.copy(alpha = 0.05f), radius = size.width * 0.38f, center = Offset(size.width * 0.92f, size.height * 1.1f))
+                    drawCircle(colors.content.copy(alpha = 0.07f), radius = size.width * rings[2], center = Offset(size.width * rings[0], size.height * rings[1]))
+                    drawCircle(colors.content.copy(alpha = 0.05f), radius = size.width * rings[5], center = Offset(size.width * rings[3], size.height * rings[4]))
                 }
                 .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
                 .clearAndSetSemantics {

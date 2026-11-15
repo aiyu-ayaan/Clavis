@@ -211,7 +211,12 @@
     <string name="add_remove_cvv">Remove saved CVV</string>
     <string name="add_keep_cvv">Keep saved CVV</string>
     <string name="add_network_auto">Detect automatically</string>
-    <string name="add_color">Card color</string>
+    <string name="add_color_bank">Bank colors</string>
+    <string name="add_color_theme">App colors</string>
+    <string name="art_classic">Bank classic</string>
+    <string name="art_deep">Bank deep</string>
+    <string name="art_light">Bank light</string>
+    <string name="art_graphite">Bank graphite</string>
     <string name="tint_primary">Navy</string>
     <string name="tint_tertiary">Emerald</string>
     <string name="tint_secondary">Slate</string>
