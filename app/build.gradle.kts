@@ -45,6 +45,21 @@ android {
         versionName = appVersionName
     }
 
+    // dev and prod install side by side (Domus pattern). Only prod is released.
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            manifestPlaceholders["appLabel"] = "@string/app_name_dev"
+        }
+        create("prod") {
+            dimension = "environment"
+            manifestPlaceholders["appLabel"] = "@string/app_name"
+        }
+    }
+
     // English only: drops the translations that libraries (Material, ML Kit, CameraX) ship.
     androidResources { localeFilters += listOf("en") }
 
@@ -68,10 +83,7 @@ android {
             ndk { abiFilters += listOf("arm64-v8a") }
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
-        // Side-by-side dev install, as in Domus.
         debug {
-            applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
             // Debug installs only on 64-bit phones and the emulator; ML Kit's native libs for 4 ABIs make the APK huge.
             ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
         }

@@ -3,6 +3,8 @@
 <resources>
     <!-- App -->
     <string name="app_name">Clavis</string>
+    <string name="app_name_dev">Clavis Dev</string>
+    <string name="dev_badge">DEV</string>
     <string name="app_tagline">Every card, locked tight.</string>
 
     <!-- Common -->

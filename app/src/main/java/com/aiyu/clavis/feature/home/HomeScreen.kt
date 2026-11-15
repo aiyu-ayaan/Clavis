@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,6 +66,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import com.aiyu.clavis.BuildConfig
 import com.aiyu.clavis.core.card.maskPan
 import com.aiyu.clavis.di.CardList
 import com.aiyu.clavis.core.model.Card
@@ -117,7 +119,12 @@ fun HomeScreen(
         modifier = Modifier.nestedScroll(scroll.nestedScrollConnection),
         topBar = {
             LargeFlexibleTopAppBar(
-                title = { Text(stringResource(R.string.home_title)) },
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(R.string.home_title))
+                        if (BuildConfig.FLAVOR == "dev") DevBadge(Modifier.padding(start = 12.dp))
+                    }
+                },
                 subtitle = cards?.takeIf { it.isNotEmpty() }?.let { { Text(pluralStringResource(R.plurals.home_card_count, it.size, it.size)) } },
                 navigationIcon = {
                     ClavisMark(Modifier.padding(start = 12.dp).size(40.dp).sharedElementOrSelf(SharedKeys.MARK), animate = false)
@@ -173,6 +180,19 @@ fun HomeScreen(
             }
         }
     }
+}
+
+/** Marks the dev flavor so it is never mistaken for the real vault. */
+@Composable
+private fun DevBadge(modifier: Modifier = Modifier) {
+    Text(
+        stringResource(R.string.dev_badge),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onTertiaryContainer,
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.shapes.small)
+            .padding(horizontal = 8.dp, vertical = 2.dp),
+    )
 }
 
 /** Rises and fades in, each card 45 ms after the one above (stagger-sequence). Once per composition. */

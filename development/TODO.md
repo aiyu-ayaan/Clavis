@@ -16,7 +16,7 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 - [x] Brand: launcher icon (adaptive + monochrome), splash mark (Sleeve, animated on API 31+)
 - [x] `ui-common`: `Motion.kt` + `rememberReducedMotion`, `InnerScreen`, predictive back, shared-transition helpers (port from Rewire)
 - [x] Add Hilt, Room, DataStore, Navigation Compose to the catalog use sites
-- [ ] `dev` / `prod` flavors, DEV badge
+- [x] `dev` / `prod` flavors, DEV badge
 - [x] `NavHost` skeleton with all routes from `03-ARCHITECTURE.md`
 - [x] `FLAG_SECURE`, `setRecentsScreenshotEnabled(false)` (API 33+)
 - [ ] Sensitive-content flag (after V3)

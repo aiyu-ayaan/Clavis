@@ -352,7 +352,7 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           CLAVIS_BUILD: ${{ needs.merged.outputs.build }}
-        run: ./gradlew :app:assembleRelease --stacktrace
+        run: ./gradlew :app:assembleProdRelease --stacktrace
 
       # app-release.apk says nothing about which release it is once downloaded. Name it after the version.
       # The in-app updater matches this name (Releases.apkFor): keep them in step.
@@ -361,7 +361,7 @@ jobs:
           VERSION: ${{ needs.merged.outputs.version }}
         run: |
           mkdir -p "$RUNNER_TEMP/android"
-          cp app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/android/Clavis-${VERSION}.apk"
+          cp app/build/outputs/apk/prod/release/app-prod-release.apk "$RUNNER_TEMP/android/Clavis-${VERSION}.apk"
           ls -la "$RUNNER_TEMP/android"
 
       # Signed (an unsigned APK cannot update an installed app), INTERNET present for the updater, and no

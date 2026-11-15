@@ -86,7 +86,8 @@ between rows fails to decrypt. The CVV sits in its own column under a separate d
 ## Build and run
 
 ```bash
-./gradlew :app:assembleDebug          # debug APK, installs as com.aiyu.clavis.dev
+./gradlew :app:assembleDevDebug       # dev APK, installs as com.aiyu.clavis.dev ("Clavis Dev", DEV badge)
+./gradlew :app:assembleProdRelease    # prod APK, com.aiyu.clavis; the only variant CI releases
 ./gradlew :core:testDebugUnitTest     # JVM unit tests
 ./gradlew --offline ...               # when dependencies are already cached
 ```

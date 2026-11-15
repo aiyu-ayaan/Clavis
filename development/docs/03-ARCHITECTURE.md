@@ -29,7 +29,7 @@ Three Gradle modules, scaffolded and building (`./gradlew :app:assembleDebug`):
 
 | Module | Namespace | Holds | Depends on |
 |--------|-----------|-------|------------|
-| `:app` | `com.aiyu.clavis` | `MainActivity`, manifest, navigation host, feature screens and view models (packages `feature.*`), DI wiring. Debug build installs as `com.aiyu.clavis.dev`. | `:core`, `:ui-common` |
+| `:app` | `com.aiyu.clavis` | `MainActivity`, manifest, navigation host, feature screens and view models (packages `feature.*`), DI wiring. The `dev` flavor installs as `com.aiyu.clavis.dev`. | `:core`, `:ui-common` |
 | `:ui-common` | `com.aiyu.clavis.ui` | Theme (`ClavisTheme`, Color/Shape/Type), shared components, **every `strings.xml`**. Exposes Compose and Material3 as `api`. | none |
 | `:core` | `com.aiyu.clavis.core` | Pure domain and infrastructure: `card` (Luhn, network, BIN), `crypto`, `data`, `settings`. No UI, no string resources. | none |
 
@@ -122,6 +122,6 @@ Back stack is cleared on lock. Predictive back is enabled on all inner screens (
 
 ## Build and flavors
 
-- `dev` and `prod` flavors, side by side, with a visible DEV badge on dev (pattern from Domus).
+- `dev` and `prod` flavors (dimension `environment`), side by side, with a visible DEV badge on dev (pattern from Domus). `dev` adds `.dev` to the application id, `-dev` to the version name and is labelled "Clavis Dev". Debug/release build types are orthogonal; CI builds and releases `prodRelease` only (`app-prod-release.apk`, renamed `Clavis-<version>.apk`).
 - Version file + changelog convention from Rewire (`VERSION`, `CHANGELOG.md`).
 - Release signing via untracked `keystore.properties`.
