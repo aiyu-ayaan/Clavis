@@ -52,6 +52,7 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 - [x] Add card (manual): live preview, grouping per network, Luhn, expiry validation, CVV optional with warning
 - [x] Card detail: mask/reveal with 20 s timer, edit, delete with fresh auth
 - [ ] Large-screen list-detail layout
+- [x] Home view options: cards / list / wallet layouts, group by name, network, bank, type, expiry year, contacts-style index rail
 
 ## Phase 5 — Card intelligence
 

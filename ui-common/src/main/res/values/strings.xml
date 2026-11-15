@@ -62,6 +62,21 @@
     <string name="home_scan_card">Scan card</string>
     <string name="home_enter_manually">Enter manually</string>
     <string name="home_settings">Settings</string>
+    <string name="home_view_options">View options</string>
+    <string name="view_layout">Layout</string>
+    <string name="view_layout_cards">Cards</string>
+    <string name="view_layout_list">List</string>
+    <string name="view_layout_wallet">Wallet</string>
+    <string name="view_group_by">Group by</string>
+    <string name="view_group_none">None</string>
+    <string name="view_group_name">Name</string>
+    <string name="view_group_network">Network</string>
+    <string name="view_group_bank">Bank</string>
+    <string name="view_group_type">Credit or debit</string>
+    <string name="view_group_expiry">Expiry year</string>
+    <string name="view_unknown_bank">Other banks</string>
+    <string name="view_jump_to">Jump to %1$s</string>
+    <string name="view_wallet_hint">Tap a card to bring it forward. Tap it again to open.</string>
 
     <!-- Add card -->
     <string name="add_title">Add card</string>

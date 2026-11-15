@@ -32,6 +32,7 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.PhotoCamera
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButtonMenu
@@ -67,7 +68,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.aiyu.clavis.BuildConfig
-import com.aiyu.clavis.core.card.maskPan
+import com.aiyu.clavis.core.card.CardGrouping
+import com.aiyu.clavis.core.card.CardLayout
+import com.aiyu.clavis.core.settings.SettingsStore
 import com.aiyu.clavis.di.CardList
 import com.aiyu.clavis.core.model.Card
 import com.aiyu.clavis.ui.R
@@ -90,13 +93,22 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(list: CardList) : ViewModel() {
+class HomeViewModel @Inject constructor(list: CardList, private val store: SettingsStore) : ViewModel() {
     /** null while the first decrypt runs, so the empty state does not flash. */
     val cards = list.cards
+
+    /** null until the saved view loads, so the list does not jump from the default layout. */
+    val view = store.settings.map { HomeView(it.homeLayout, it.homeGrouping) }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    fun setLayout(layout: CardLayout) = viewModelScope.launch { store.update { it.copy(homeLayout = layout) } }
+    fun setGrouping(grouping: CardGrouping) = viewModelScope.launch { store.update { it.copy(homeGrouping = grouping) } }
 }
+
+data class HomeView(val layout: CardLayout, val grouping: CardGrouping)
 
 /** Home (screen 5): large collapsing bar, wallet of card surfaces, FAB menu (scan / manual). */
 @Composable
@@ -109,11 +121,12 @@ fun HomeScreen(
     vm: HomeViewModel = hiltViewModel(),
 ) {
     val cards by vm.cards.collectAsStateWithLifecycle()
+    val view by vm.view.collectAsStateWithLifecycle()
+    var viewOptions by rememberSaveable { mutableStateOf(false) }
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     // Hoisted above the null/empty branches so a reload or detail round-trip keeps the scroll position.
     val listState = rememberLazyListState()
     var fabOpen by rememberSaveable { mutableStateOf(false) }
-    val validThru = stringResource(R.string.detail_valid_thru)
 
     Scaffold(
         modifier = Modifier.nestedScroll(scroll.nestedScrollConnection),
@@ -130,6 +143,9 @@ fun HomeScreen(
                     ClavisMark(Modifier.padding(start = 12.dp).size(40.dp).sharedElementOrSelf(SharedKeys.MARK), animate = false)
                 },
                 actions = {
+                    if (cards?.isNotEmpty() == true) {
+                        IconButton(onClick = { viewOptions = true }) { Icon(Icons.Rounded.Tune, contentDescription = stringResource(R.string.home_view_options)) }
+                    }
                     IconButton(onClick = onLock) { Icon(Icons.Rounded.Lock, contentDescription = stringResource(R.string.action_lock)) }
                     IconButton(onClick = onSettings) { Icon(Icons.Rounded.Settings, contentDescription = stringResource(R.string.home_settings)) }
                 },
@@ -151,34 +167,29 @@ fun HomeScreen(
         when {
             list == null -> Unit
             list.isEmpty() -> EmptyState(Modifier.padding(padding), onAddManual, onScan)
-            else -> LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding() + 8.dp, bottom = padding.calculateBottomPadding() + 120.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                state = listState,
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                itemsIndexed(list, key = { _, c -> c.id }) { index, card ->
-                    val r = card.record
-                    CardSurface(
-                        number = maskPan(r.pan, r.network),
-                        holder = r.holderName,
-                        expiry = r.expiry.short,
-                        networkMark = r.network.mark(),
-                        validThruLabel = validThru,
-                        description = r.maskedDescription(),
-                        tint = r.tint,
-                        title = r.title(),
-                        onClick = { onOpenCard(card.id) },
-                        modifier = Modifier
-                            .widthIn(max = 520.dp)
-                            .animateItem()
-                            .staggeredEntrance(index)
-                            .sharedBoundsOrSelf(SharedKeys.card(card.id), MaterialTheme.shapes.extraLarge),
-                    )
-                }
+            else -> view?.let { v ->
+                CardCollection(
+                    sections = rememberSections(list, v.grouping),
+                    layout = v.layout,
+                    listState = listState,
+                    bottomPadding = padding.calculateBottomPadding() + 120.dp,
+                    onOpenCard = onOpenCard,
+                    // Top padding on the list itself, so sticky headers stop under the app bar.
+                    modifier = Modifier.padding(top = padding.calculateTopPadding()),
+                )
             }
         }
+    }
+
+    val v = view
+    if (viewOptions && v != null) {
+        ViewOptionsSheet(
+            layout = v.layout,
+            grouping = v.grouping,
+            onLayout = vm::setLayout,
+            onGrouping = vm::setGrouping,
+            onDismiss = { viewOptions = false },
+        )
     }
 }
 
@@ -193,22 +204,6 @@ private fun DevBadge(modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.shapes.small)
             .padding(horizontal = 8.dp, vertical = 2.dp),
     )
-}
-
-/** Rises and fades in, each card 45 ms after the one above (stagger-sequence). Once per composition. */
-@Composable
-private fun Modifier.staggeredEntrance(index: Int): Modifier {
-    if (rememberReducedMotion()) return this
-    val progress = remember { Animatable(0f) }
-    val spec = MaterialTheme.motionScheme.slowSpatialSpec<Float>()
-    LaunchedEffect(Unit) {
-        delay(index.coerceAtMost(8) * ClavisMotion.STAGGER_MILLIS.toLong())
-        progress.animateTo(1f, spec)
-    }
-    return graphicsLayer {
-        alpha = progress.value.coerceIn(0f, 1f)
-        translationY = (1f - progress.value) * 48.dp.toPx()
-    }
 }
 
 @Composable
