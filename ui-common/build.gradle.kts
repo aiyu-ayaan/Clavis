@@ -27,3 +27,13 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.tooling.preview)
 }
+
+kotlin {
+    compilerOptions {
+        optIn.addAll(
+            "androidx.compose.material3.ExperimentalMaterial3Api",
+            "androidx.compose.material3.ExperimentalMaterial3ExpressiveApi",
+            "androidx.compose.animation.ExperimentalSharedTransitionApi",
+        )
+    }
+}
