@@ -1,6 +1,9 @@
 package com.aiyu.clavis.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -106,7 +109,7 @@ fun CardSurface(
                             style = MaterialTheme.typography.titleMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.weight(1f).padding(end = 12.dp),
                         )
                         Text(
                             networkMark,
@@ -116,7 +119,12 @@ fun CardSurface(
                     Column {
                         Chip(colors)
                         Spacer(Modifier.height(14.dp))
-                        Text(number, style = CardNumberTextStyle, maxLines = 2)
+                        BasicText(
+                            number,
+                            style = CardNumberTextStyle.copy(color = colors.content),
+                            maxLines = 1,
+                            autoSize = TextAutoSize.StepBased(minFontSize = 12.sp, maxFontSize = CardNumberTextStyle.fontSize * fontScaleCap()),
+                        )
                     }
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text(
@@ -158,3 +166,7 @@ private fun Chip(colors: CardColors) {
             },
     )
 }
+
+/** Lets the number grow with the user's font scale up to 1.6x, then auto-size keeps it on one line. */
+@Composable
+private fun fontScaleCap(): Float = LocalDensity.current.fontScale.coerceAtMost(1.6f) / LocalDensity.current.fontScale

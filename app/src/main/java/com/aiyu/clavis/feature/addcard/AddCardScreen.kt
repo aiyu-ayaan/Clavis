@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -246,7 +247,7 @@ fun AddCardScreen(onBack: () -> Unit, onSaved: (String) -> Unit, previewModifier
         },
     ) {
         CardSurface(
-            number = formatPan(vm.number.padEnd((if (network == CardNetwork.UNKNOWN) 16 else network.maxLength).coerceAtLeast(vm.number.length), '•'), network),
+            number = formatPan(vm.number.padEnd(previewLength(network, vm.number.length), '•'), network),
             holder = vm.holder.ifBlank { stringResource(R.string.add_holder_placeholder) },
             expiry = Expiry.parse(vm.expiry)?.short ?: stringResource(R.string.add_expiry_placeholder),
             networkMark = network.mark(),
@@ -275,11 +276,13 @@ fun AddCardScreen(onBack: () -> Unit, onSaved: (String) -> Unit, previewModifier
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        // Side by side normally; stacks when the screen is narrow or the font is large.
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), maxItemsInEachRow = 2) {
             OutlinedTextField(
                 value = vm.expiry,
                 onValueChange = { v -> val d = v.filter(Char::isDigit).take(4); vm.expiry = d; if (Expiry.parse(d) != null) cvvFocus.requestFocus() },
-                label = { Text(stringResource(R.string.field_expiry)) },
+                label = { Text(stringResource(R.string.field_expiry_short)) },
+                placeholder = { Text(stringResource(R.string.add_expiry_placeholder)) },
                 visualTransformation = ExpiryTransformation,
                 keyboardOptions = noLearning,
                 isError = vm.expiryError != null,
@@ -289,17 +292,17 @@ fun AddCardScreen(onBack: () -> Unit, onSaved: (String) -> Unit, previewModifier
                     else -> null
                 },
                 singleLine = true,
-                modifier = Modifier.weight(1f).focusRequester(expiryFocus),
+                modifier = Modifier.weight(1f).widthIn(min = 140.dp).focusRequester(expiryFocus),
             )
             OutlinedTextField(
                 value = vm.cvv,
                 onValueChange = { v -> val d = v.filter(Char::isDigit).take(network.cvvLength); vm.cvv = d; if (d.length == network.cvvLength) holderFocus.requestFocus() },
-                label = { Text(stringResource(R.string.field_cvv)) },
+                label = { Text(stringResource(R.string.detail_cvv)) },
                 placeholder = if (vm.hasSavedCvv && !vm.removeCvv) { { Text(stringResource(R.string.add_cvv_saved)) } } else null,
                 visualTransformation = if (cvvVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = noLearning,
                 isError = vm.cvvError != null,
-                supportingText = vm.cvvError?.let { { ErrorText(it) } },
+                supportingText = vm.cvvError?.let { { ErrorText(it) } } ?: { Text(stringResource(R.string.field_optional)) },
                 trailingIcon = {
                     IconButton(onClick = { cvvVisible = !cvvVisible }) {
                         Icon(
@@ -309,7 +312,7 @@ fun AddCardScreen(onBack: () -> Unit, onSaved: (String) -> Unit, previewModifier
                     }
                 },
                 singleLine = true,
-                modifier = Modifier.weight(1f).focusRequester(cvvFocus),
+                modifier = Modifier.weight(1f).widthIn(min = 140.dp).focusRequester(cvvFocus),
             )
         }
         if (vm.cvv.isNotEmpty()) InfoNote(stringResource(R.string.cvv_storage_warning))
@@ -401,8 +404,9 @@ private fun NetworkChip(network: CardNetwork, onPick: (CardNetwork?) -> Unit) {
 @Composable
 private fun TintPicker(selected: Int, onSelect: (Int) -> Unit) {
     val names = listOf<Int>(R.string.tint_primary, R.string.tint_tertiary, R.string.tint_secondary, R.string.tint_night, R.string.tint_soft)
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(stringResource(R.string.add_color), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+    Text(stringResource(R.string.add_color), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    // Swatches share the width evenly, so the row never squeezes its label (dense screens, big fonts).
+    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth().widthIn(max = 360.dp), verticalAlignment = Alignment.CenterVertically) {
         CardTint.entries.forEachIndexed { i, tint ->
             val name = stringResource(names[i])
             Box(
@@ -455,3 +459,9 @@ private object ExpiryTransformation : VisualTransformation {
     }
 }
 
+/** Placeholder length for the preview: 16 when the network allows it (Amex 15), longer only once typed. */
+private fun previewLength(network: CardNetwork, typed: Int): Int {
+    val lengths = network.validLengths
+    val usual = if (16 in lengths) 16 else lengths.last
+    return lengths.firstOrNull { it >= maxOf(typed, usual) } ?: typed
+}

@@ -62,6 +62,7 @@ import com.aiyu.clavis.security.canUseBiometric
 import com.aiyu.clavis.ui.R
 import com.aiyu.clavis.ui.components.ClavisMark
 import com.aiyu.clavis.ui.components.PinEntry
+import com.aiyu.clavis.ui.components.pinKeySize
 import com.aiyu.clavis.ui.components.SharedKeys
 import com.aiyu.clavis.ui.components.sharedElementOrSelf
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -130,9 +131,9 @@ fun SetupScreen(onBack: () -> Unit, onDone: () -> Unit, vm: SetupViewModel = hil
         Text(stringResource(R.string.setup_step_of, index, totalSteps), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.height(8.dp))
         LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth().widthIn(max = 360.dp))
-        Spacer(Modifier.height(28.dp))
+        Spacer(Modifier.height(if (pinKeySize() < 72.dp) 12.dp else 28.dp))
         val mark: @Composable () -> Unit = {
-            ClavisMark(Modifier.size(88.dp).sharedElementOrSelf(SharedKeys.MARK), icon = if (step == Step.BIOMETRIC) Icons.Rounded.Fingerprint else Icons.Rounded.Key)
+            ClavisMark(Modifier.size(if (pinKeySize() < 72.dp) 64.dp else 88.dp).sharedElementOrSelf(SharedKeys.MARK), icon = if (step == Step.BIOMETRIC) Icons.Rounded.Fingerprint else Icons.Rounded.Key)
         }
         AnimatedContent(
             step == Step.BIOMETRIC,

@@ -27,6 +27,7 @@ import com.aiyu.clavis.ui.R
 import com.aiyu.clavis.ui.SessionViewModel
 import com.aiyu.clavis.ui.components.ClavisMark
 import com.aiyu.clavis.ui.components.PinEntry
+import com.aiyu.clavis.ui.components.pinKeySize
 import com.aiyu.clavis.ui.components.SharedKeys
 import com.aiyu.clavis.ui.components.sharedElementOrSelf
 import com.aiyu.clavis.ui.message
@@ -50,7 +51,7 @@ fun LockScreen(session: SessionViewModel, onUnlocked: () -> Unit) {
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(top = 16.dp).sharedElementOrSelf(SharedKeys.TITLE),
         )
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(if (pinKeySize() < 72.dp) 12.dp else 32.dp))
         PinEntry(
             title = stringResource(R.string.lock_title),
             message = message,
@@ -61,7 +62,7 @@ fun LockScreen(session: SessionViewModel, onUnlocked: () -> Unit) {
             onDigit = { scope.launch { verifier.type(it) } },
             onDelete = verifier::delete,
             enabled = !verifier.busy && !verifier.lockedOut,
-            header = { ClavisMark(Modifier.size(96.dp).sharedElementOrSelf(SharedKeys.MARK), icon = Icons.Rounded.Lock) },
+            header = { ClavisMark(Modifier.size(if (pinKeySize() < 72.dp) 64.dp else 96.dp).sharedElementOrSelf(SharedKeys.MARK), icon = Icons.Rounded.Lock) },
             startKey = BiometricKey(
                 enabled = session.biometricEnabled,
                 autoPrompt = !verifier.lockedOut,

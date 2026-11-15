@@ -232,6 +232,8 @@
     <string name="settings_clipboard_30s">30 seconds</string>
     <string name="settings_clipboard_60s">1 minute</string>
     <string name="settings_clipboard_never">Never</string>
+    <string name="field_expiry_short">Expiry</string>
+    <string name="field_optional">Optional</string>
     <string name="add_detected_from_number">Detected from the card number, offline</string>
     <string name="add_detected_summary">%1$s · %2$s</string>
     <string name="settings_bin_data">Card bank data</string>

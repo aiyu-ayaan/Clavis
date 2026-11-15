@@ -100,14 +100,15 @@ fun PinPad(
     enabled: Boolean = true,
     startKey: (@Composable () -> Unit)? = null,
 ) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    val key = pinKeySize()
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(if (key < KEY) 8.dp else 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         listOf("123", "456", "789").forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
                 row.forEach { d -> DigitKey(d, enabled) { onDigit(d) } }
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(20.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(KEY), contentAlignment = Alignment.Center) { startKey?.invoke() }
+            Box(Modifier.size(key), contentAlignment = Alignment.Center) { startKey?.invoke() }
             DigitKey('0', enabled) { onDigit('0') }
             PadKey(enabled, onDelete, filled = false, label = stringResource(R.string.pin_key_delete)) {
                 Icon(Icons.AutoMirrored.Rounded.Backspace, contentDescription = null)
@@ -117,6 +118,14 @@ fun PinPad(
 }
 
 private val KEY = 72.dp
+
+/** 72 dp keys (06-UX-DESIGN.md); 60 dp on short windows (dense screens, big fonts) so the pad fits without scrolling. */
+@Composable
+fun pinKeySize(): androidx.compose.ui.unit.Dp {
+    val heightDp = with(androidx.compose.ui.platform.LocalDensity.current) { androidx.compose.ui.platform.LocalWindowInfo.current.containerSize.height.toDp() }
+    val fontScale = androidx.compose.ui.platform.LocalDensity.current.fontScale
+    return if (heightDp < 720.dp || fontScale > 1.25f) 60.dp else KEY
+}
 
 @Composable
 private fun DigitKey(digit: Char, enabled: Boolean, onClick: () -> Unit) {
@@ -138,7 +147,7 @@ private fun PadKey(enabled: Boolean, onClick: () -> Unit, filled: Boolean, label
         color = if (filled) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface,
         interactionSource = interaction,
-        modifier = Modifier.size(KEY).semantics { contentDescription = label },
+        modifier = Modifier.size(pinKeySize()).semantics { contentDescription = label },
     ) {
         Box(contentAlignment = Alignment.Center) { content() }
     }
@@ -166,7 +175,7 @@ fun PinEntry(
 ) {
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         header()
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(if (pinKeySize() < KEY) 8.dp else 20.dp))
         val enter = MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
         val exit = MaterialTheme.motionScheme.fastEffectsSpec<Float>()
         AnimatedContent(title, transitionSpec = { fadeIn(enter) togetherWith fadeOut(exit) }, label = "title") {
@@ -183,7 +192,7 @@ fun PinEntry(
                 .semantics { liveRegion = LiveRegionMode.Polite },
         )
         PinDots(entered, length, errorTick, isError)
-        Spacer(Modifier.height(28.dp))
+        Spacer(Modifier.height(if (pinKeySize() < KEY) 16.dp else 28.dp))
         PinPad(onDigit, onDelete, enabled = enabled, startKey = startKey)
         footer()
     }
