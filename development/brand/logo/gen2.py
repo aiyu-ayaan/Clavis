@@ -28,16 +28,11 @@ def inset(poly, g):
     return out
 def poly(pts): return "M" + " L".join(f(p) for p in pts) + " Z"
 
-# D — Layers: nested squares tucked toward the top-right; depth = layered keys.
-t, g = 24, 12
-x, y, s, rr = 20.0, 20.0, 216.0, 44.0
-d = ""
-for i in range(2):
-    d += rrect(x, y, s, s, rr) + " " + rrect(x+t, y+t, s-2*t, s-2*t, rr-t*0.55) + " "
-    ns = (s - 2*t) * 0.66
-    x, y = x + s - t - g - ns, y + t + g   # hug top-right of the hole
-    s, rr = ns, max(rr*0.66, 12)
-d += rrect(x, y, s, s, rr)
+# D — Layers: nested squares tucked into the top-right corner; depth = layered keys.
+# Explicit grid: outer ring t24, middle ring t20 (gap 14), solid core (gap 10).
+d = rrect(20, 20, 216, 216, 30) + " " + rrect(44, 44, 168, 168, 14)
+d += " " + rrect(90, 58, 108, 108, 20) + " " + rrect(110, 78, 68, 68, 8)
+d += " " + rrect(132, 88, 36, 36, 8)
 svg(d, "d-layers.svg")
 
 # E — Facet: an isometric block, three faces split by gaps; top face hollow = nothing hidden from you.
@@ -56,16 +51,8 @@ da = (f"M{x0:.2f} {bot} V{top_y+ro:.2f} A{ro} {ro} 0 0 1 {x0+w:.2f} {top_y+ro:.2
 da += " " + circle(C, 200, 26)
 svg(da, "f-arch.svg", "nonzero")
 
-# G — Fold: a square folded shut along its diagonal; the flap tucks inside, nothing loose.
-s0, r0, gp = 208, 36, 14; a = (256 - s0)/2; b = a + s0
-lower = (f"M{a:.2f} {a+r0:.2f} V{b-r0:.2f} A{r0} {r0} 0 0 0 {a+r0:.2f} {b:.2f} H{b-r0:.2f} "
-         f"A{r0} {r0} 0 0 0 {b:.2f} {b-r0:.2f} Z")
-dxl, dyl = s0, s0 - 2*r0; L = math.hypot(dxl, dyl)
-nx, ny = dyl/L*gp, -dxl/L*gp        # normal pointing up-right
-p1 = (a + nx, a + r0 + ny); p2 = (b + nx, b - r0 + ny)
-# intersect offset line with top edge y=a and right edge x=b
-ta = (a - p1[1]) / (dyl/ L) / L * L if False else (a - p1[1]) / (dyl/dxl) if dyl else 0
-top_x = p1[0] + (a - p1[1]) * dxl / dyl
-right_y = p1[1] + (b - p1[0]) * dyl / dxl
-flap = (f"M{top_x:.2f} {a:.2f} H{b-r0:.2f} A{r0} {r0} 0 0 1 {b:.2f} {a+r0:.2f} V{right_y:.2f} Z")
+# G — Fold: a square folded shut on its 45-degree diagonal; the flap tucks in, nothing loose.
+s0, r0, gp = 208, 36, 12; a = (256 - s0)/2; b = a + s0; k = gp*math.sqrt(2)
+lower = f"M{a:.2f} {a:.2f} L{b:.2f} {b:.2f} H{a+r0:.2f} A{r0} {r0} 0 0 1 {a:.2f} {b-r0:.2f} Z"
+flap = f"M{a+k:.2f} {a:.2f} H{b-r0:.2f} A{r0} {r0} 0 0 1 {b:.2f} {a+r0:.2f} V{b-k:.2f} Z"
 svg(lower + " " + flap, "g-fold.svg", "nonzero")
