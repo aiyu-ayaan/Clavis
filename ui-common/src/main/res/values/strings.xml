@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Every user-visible string in Clavis lives in this module. Do not add strings.xml to :app or :core. -->
+<resources>
+    <!-- App -->
+    <string name="app_name">Clavis</string>
+    <string name="app_tagline">Every card, locked tight.</string>
+
+    <!-- Common -->
+    <string name="action_continue">Continue</string>
+    <string name="action_skip">Skip</string>
+    <string name="action_next">Next</string>
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_done">Done</string>
+    <string name="action_get_started">Get started</string>
+    <string name="action_enter_manually">Enter manually</string>
+
+    <!-- Intro pager -->
+    <string name="intro_title_1">Your cards, one safe place</string>
+    <string name="intro_body_1">Everything stays on this device.</string>
+    <string name="intro_title_2">Locked by you</string>
+    <string name="intro_body_2">PIN plus fingerprint. No account, no cloud, no internet permission.</string>
+    <string name="intro_title_3">Fast when you need it</string>
+    <string name="intro_body_3">Tap to copy. Share safely, with or without the CVV.</string>
+
+    <!-- Security setup -->
+    <string name="setup_create_pin_title">Create your PIN</string>
+    <string name="setup_create_pin_body">Choose a %1$d-digit PIN. It unlocks your cards.</string>
+    <string name="setup_confirm_pin_title">Confirm your PIN</string>
+    <string name="setup_pin_mismatch">PINs do not match. Try again.</string>
+    <string name="setup_pin_too_simple">Choose a PIN that is not a repeat or a sequence.</string>
+    <string name="setup_no_recovery">If you forget your PIN, your cards cannot be recovered.</string>
+    <string name="setup_biometric_title">Use fingerprint too?</string>
+    <string name="setup_biometric_body">Unlock faster. Your PIN always works as a backup.</string>
+    <string name="setup_biometric_enable">Enable biometric</string>
+    <string name="setup_biometric_not_now">Not now</string>
+    <string name="setup_step_of">Step %1$d of %2$d</string>
+
+    <!-- Lock -->
+    <string name="lock_title">Unlock Clavis</string>
+    <string name="lock_enter_pin">Enter your PIN</string>
+    <string name="lock_wrong_pin">Wrong PIN</string>
+    <string name="lock_attempts_left">%1$d attempts left</string>
+    <string name="lock_locked_out">Too many attempts. Try again in %1$s.</string>
+    <string name="lock_use_biometric">Use biometric</string>
+    <string name="biometric_prompt_title">Unlock Clavis</string>
+    <string name="biometric_prompt_subtitle">Confirm it is you</string>
+    <string name="biometric_prompt_use_pin">Use PIN</string>
+    <string name="pin_key_delete">Delete</string>
+    <string name="pin_digits_entered">%1$d of %2$d digits entered</string>
+
+    <!-- Home -->
+    <string name="home_title">Cards</string>
+    <string name="home_empty_title">Add your first card</string>
+    <string name="home_empty_body">Scan it or type it in. It is encrypted on this device.</string>
+    <string name="home_add_card">Add card</string>
+    <string name="home_scan_card">Scan card</string>
+    <string name="home_enter_manually">Enter manually</string>
+    <string name="home_settings">Settings</string>
+
+    <!-- Add card -->
+    <string name="add_title">Add card</string>
+    <string name="add_edit_title">Edit card</string>
+    <string name="field_number">Card number</string>
+    <string name="field_expiry">Expiry (MM/YY)</string>
+    <string name="field_cvv">CVV (optional)</string>
+    <string name="field_holder">Name on card</string>
+    <string name="field_nickname">Nickname</string>
+    <string name="field_notes">Notes</string>
+    <string name="field_bank">Bank</string>
+    <string name="field_network">Network</string>
+    <string name="field_type">Type</string>
+    <string name="detected_label">Detected</string>
+    <string name="error_number_invalid">Card number looks wrong. Check the digits.</string>
+    <string name="error_expiry_invalid">Enter a valid expiry date.</string>
+    <string name="error_expiry_past">This card has expired.</string>
+    <string name="error_cvv_invalid">CVV has the wrong length for this card.</string>
+    <string name="cvv_storage_warning">The CVV is stored encrypted on this device and shown only after you authenticate.</string>
+
+    <!-- Scan -->
+    <string name="scan_title">Scan card</string>
+    <string name="scan_hint">Fit the front of the card inside the frame.</string>
+    <string name="scan_torch">Torch</string>
+    <string name="scan_permission_title">Camera access needed</string>
+    <string name="scan_permission_body">Clavis uses the camera only to read the card in front of it. Images are never saved.</string>
+    <string name="scan_permission_grant">Allow camera</string>
+    <string name="scan_failed">Could not read the card. Try better light or enter it manually.</string>
+
+    <!-- Card network and type -->
+    <string name="network_visa">Visa</string>
+    <string name="network_mastercard">Mastercard</string>
+    <string name="network_rupay">RuPay</string>
+    <string name="network_amex">American Express</string>
+    <string name="network_discover">Discover</string>
+    <string name="network_diners">Diners Club</string>
+    <string name="network_jcb">JCB</string>
+    <string name="network_unionpay">UnionPay</string>
+    <string name="network_maestro">Maestro</string>
+    <string name="network_unknown">Unknown</string>
+    <string name="type_credit">Credit</string>
+    <string name="type_debit">Debit</string>
+    <string name="type_prepaid">Prepaid</string>
+    <string name="type_unknown">Unknown</string>
+
+    <!-- Card detail -->
+    <string name="detail_reveal">Reveal</string>
+    <string name="detail_hide">Hide</string>
+    <string name="detail_copy">Copy</string>
+    <string name="detail_share">Share</string>
+    <string name="detail_valid_thru">Valid thru</string>
+    <string name="detail_delete_title">Delete this card?</string>
+    <string name="detail_delete_body">The card is removed from this device. This cannot be undone.</string>
+    <string name="detail_masked_description">%1$s ending %2$s</string>
+
+    <!-- Copy -->
+    <string name="copy_number">Copy number</string>
+    <string name="copy_number_spaced">Copy with spaces</string>
+    <string name="copy_expiry">Copy expiry</string>
+    <string name="copy_holder">Copy name</string>
+    <string name="copy_cvv">Copy CVV</string>
+    <string name="copy_all">Copy all as text</string>
+    <string name="copy_step_by_step">Copy step by step</string>
+    <string name="copy_copied">Copied %1$s</string>
+    <string name="copy_clears_in">Clears in %1$d s</string>
+    <string name="copy_clear_now">Clear now</string>
+
+    <!-- Share -->
+    <string name="share_title">Share card</string>
+    <string name="share_include_cvv">Include CVV</string>
+    <string name="share_include_holder">Include name</string>
+    <string name="share_style_card">Card</string>
+    <string name="share_style_minimal">Minimal</string>
+    <string name="share_preview">Preview</string>
+    <string name="share_warning">Anyone who receives this can use the card. Chat apps may keep a copy.</string>
+    <string name="share_text_only">Share text only</string>
+    <string name="share_action">Share</string>
+    <string name="share_cvv_included">CVV will be included</string>
+    <string name="share_chooser_title">Share card via</string>
+    <string name="share_text_card">Card: %1$s</string>
+    <string name="share_text_name">Name: %1$s</string>
+    <string name="share_text_number">Number: %1$s</string>
+    <string name="share_text_expiry">Expiry: %1$s</string>
+    <string name="share_text_cvv">CVV: %1$s</string>
+
+    <!-- Fresh auth -->
+    <string name="auth_required_title">Confirm it is you</string>
+    <string name="auth_required_body">Authenticate to continue.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_security">Security</string>
+    <string name="settings_change_pin">Change PIN</string>
+    <string name="settings_biometric">Biometric unlock</string>
+    <string name="settings_auto_lock">Auto-lock</string>
+    <string name="settings_auto_lock_immediately">Immediately</string>
+    <string name="settings_auto_lock_30s">After 30 seconds</string>
+    <string name="settings_auto_lock_1m">After 1 minute</string>
+    <string name="settings_auto_lock_5m">After 5 minutes</string>
+    <string name="settings_wipe">Erase all data</string>
+    <string name="settings_wipe_body">All cards and your PIN are deleted. This cannot be undone.</string>
+    <string name="settings_section_privacy">Privacy</string>
+    <string name="settings_clipboard_clear">Clear clipboard after</string>
+    <string name="settings_never_share">Disable sharing</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_dynamic_color">Dynamic color</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_no_internet">This app has no internet permission.</string>
+    <string name="settings_licenses">Open-source licenses</string>
+
+    <!-- Generic -->
+    <string name="error_generic">Something went wrong. Try again.</string>
+</resources>

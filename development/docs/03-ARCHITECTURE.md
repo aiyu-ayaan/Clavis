@@ -25,27 +25,35 @@ Scanning alternative considered: Google's Payment Card Recognition API in `play-
 
 ## Modules
 
-Start as a single Gradle module (`:app`) with package boundaries. Split only when build times or ownership demand it.
+Three Gradle modules, scaffolded and building (`./gradlew :app:assembleDebug`):
+
+| Module | Namespace | Holds | Depends on |
+|--------|-----------|-------|------------|
+| `:app` | `com.aiyu.clavis` | `MainActivity`, manifest, navigation host, feature screens and view models (packages `feature.*`), DI wiring. Debug build installs as `com.aiyu.clavis.dev`. | `:core`, `:ui-common` |
+| `:ui-common` | `com.aiyu.clavis.ui` | Theme (`ClavisTheme`, Color/Shape/Type), shared components, **every `strings.xml`**. Exposes Compose and Material3 as `api`. | none |
+| `:core` | `com.aiyu.clavis.core` | Pure domain and infrastructure: `card` (Luhn, network, BIN), `crypto`, `data`, `settings`. No UI, no string resources. | none |
+
+Rules:
+
+- All user-visible strings go in `ui-common/src/main/res/values/strings.xml` (and its locale folders). `:app` and `:core` never add `strings.xml`. Non-text resources (launcher icon, splash theme, backup rules) stay in `:app`.
+- `:core` stays UI-free so crypto and card logic are testable on the JVM. When `:core` must report text to the user it returns a typed error and `:app` maps it to a string.
+- Add a module only when a boundary pays for itself. Candidates: `:feature-scan` (CameraX + ML Kit, heaviest dependencies), `:core-crypto` if the crypto layer needs stricter visibility.
+
+Target layout inside the modules:
 
 ```
-com.aiyu.clavis
-├── core
-│   ├── crypto        KeyManager, VaultCipher, PinKdf, AuthGate
-│   ├── data          Room db, CardDao, CardEntity, repositories
-│   ├── model         Card, CardNetwork, CardType, Issuer
-│   ├── card          Luhn, NetworkDetector, BinLookup (offline)
-│   └── settings      DataStore wrapper
-├── feature
-│   ├── onboarding    intro pager, security setup
-│   ├── lock          PIN pad, biometric, lockout UI
-│   ├── cards         list, detail
-│   ├── addcard       manual form, scan screen, review
-│   ├── share         options sheet, image renderer, intent builder
-│   └── settings
-├── ui
-│   ├── theme         Color, Type, Shape, Motion (Rewire pattern)
-│   └── components    CardSurface, PinPad, SecureField, CopyChip, ScreenHeader
-└── ClavisApp, MainActivity, NavHost
+core/   com.aiyu.clavis.core
+        ├── crypto   KeyManager, VaultCipher, PinKdf, AuthGate
+        ├── data     Room db, CardDao, CardEntity, repositories
+        ├── model    Card, Issuer
+        ├── card     CardNetwork, CardType, Luhn (done), NetworkDetector, BinLookup
+        └── settings DataStore wrapper
+ui-common/ com.aiyu.clavis.ui
+        ├── theme       Color, Type, Shape, Motion
+        └── components  CardSurface, PinPad, SecureField, CopyChip, ScreenHeader
+app/    com.aiyu.clavis
+        ├── MainActivity, ClavisApp, NavHost
+        └── feature  onboarding, lock, cards, addcard, share, settings
 ```
 
 ## Data model
