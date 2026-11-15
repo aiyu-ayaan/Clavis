@@ -29,6 +29,9 @@ data class ShareLabels(val title: String, val networkMark: String, val validThru
 
 /** cache/shared/ only, random file names, deleted after the share, on lock and on start (05-SHARE-AND-COPY.md). */
 object ShareCache {
+    /** Set when the chooser opens; the next return to the app deletes the image. */
+    @Volatile var pending = false
+
     fun dir(context: Context) = File(context.cacheDir, "shared")
     fun clear(context: Context) {
         dir(context).listFiles()?.forEach { it.delete() }
@@ -82,9 +85,9 @@ object ShareRenderer {
         if (cvv != null) {
             val back = RectF(PAD, front.bottom + PAD, PAD + CARD_W, front.bottom + PAD + CARD_H)
             cardBackground(c, back, colors)
-            c.drawRect(back.left, back.top + 70, back.right, back.top + 170, paint(ColorUtils.blendARGB(colors.container, colors.onSurface, 0.7f)))
+            c.drawRect(back.left, back.top + 70, back.right, back.top + 170, paint(ColorUtils.blendARGB(colors.container, colors.content, 0.85f)))
             val strip = RectF(back.left + 56, back.top + 240, back.right - 260, back.top + 330)
-            c.drawRoundRect(strip, 10f, 10f, paint(ColorUtils.blendARGB(colors.container, colors.content, 0.8f)))
+            c.drawRoundRect(strip, 10f, 10f, paint(ColorUtils.blendARGB(colors.container, colors.content, 0.18f)))
             val box = RectF(back.right - 240, back.top + 230, back.right - 56, back.top + 340)
             c.drawRoundRect(box, 16f, 16f, paint(colors.content))
             val cv = paint(colors.container); cv.textSize = 60f; cv.typeface = Typeface.MONOSPACE; cv.textAlign = Paint.Align.CENTER
@@ -141,6 +144,7 @@ object Sharer {
         } else {
             intent.type = "text/plain"
         }
+        ShareCache.pending = image != null
         context.startActivity(Intent.createChooser(intent, chooserTitle))
     }
 }

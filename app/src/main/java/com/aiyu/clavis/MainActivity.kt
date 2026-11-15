@@ -13,6 +13,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aiyu.clavis.core.settings.ThemeMode
+import com.aiyu.clavis.feature.share.ShareCache
 import com.aiyu.clavis.ui.ClavisNavHost
 import com.aiyu.clavis.ui.SessionViewModel
 import com.aiyu.clavis.ui.theme.ClavisTheme
@@ -55,5 +56,7 @@ class MainActivity : FragmentActivity() {
         super.onStart()
         if (stoppedAt > 0 && SystemClock.elapsedRealtime() - stoppedAt >= session.settings.value.autoLockMs) session.lock()
         stoppedAt = 0
+        // Back from the share sheet: the target has read the image by now (05-SHARE-AND-COPY.md).
+        if (ShareCache.pending) { ShareCache.pending = false; ShareCache.clear(this) }
     }
 }
