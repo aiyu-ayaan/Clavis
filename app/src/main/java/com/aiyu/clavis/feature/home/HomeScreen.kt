@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
@@ -107,6 +108,8 @@ fun HomeScreen(
 ) {
     val cards by vm.cards.collectAsStateWithLifecycle()
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    // Hoisted above the null/empty branches so a reload or detail round-trip keeps the scroll position.
+    val listState = rememberLazyListState()
     var fabOpen by rememberSaveable { mutableStateOf(false) }
     val validThru = stringResource(R.string.detail_valid_thru)
 
@@ -145,6 +148,7 @@ fun HomeScreen(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding() + 8.dp, bottom = padding.calculateBottomPadding() + 120.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
+                state = listState,
                 modifier = Modifier.fillMaxSize(),
             ) {
                 itemsIndexed(list, key = { _, c -> c.id }) { index, card ->
