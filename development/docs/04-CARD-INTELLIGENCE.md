@@ -84,4 +84,4 @@ Network logos (Visa, Mastercard, etc.) are trademarks with brand-use rules. For 
 
 ## Test data
 
-Use the published test PANs from payment processors' docs (for example `4242 4242 4242 4242`, `5555 5555 5555 4444`, `3782 822463 10005`) in unit tests. Never commit real card numbers.
+Use the published test PANs from payment processors' docs in unit tests and manual QA. The list lives in `development/TempCards.md` (PayPal's test numbers: Amex, Diners, Discover, JCB, Mastercard, Visa including the 13-digit `4222222222222`, Dankort, Switch/Solo); `4242 4242 4242 4242` is also fine. Never commit real card numbers.

@@ -28,7 +28,7 @@ Update the matching doc and `TODO.md` in the same commit as any change that alte
 
 1. **Network is for the GitHub updater only (D24).** `INTERNET` exists solely for the update check/download, fenced to GitHub hosts by `network_security_config.xml`. No analytics, crash, ads or any networking SDK. Any other network use needs an entry in `07-DECISIONS.md` first.
 2. **All user-visible strings live in `ui-common/src/main/res/values/strings.xml`** (plus its locale folders). Never add `strings.xml` to `:app` or `:core`. Reference with `com.aiyu.clavis.ui.R`.
-3. **Card data never touches disk, logs, backups or test fixtures in plaintext.** Only AEAD ciphertext is persisted. Tests use published processor test PANs (e.g. `4242424242424242`), never real cards.
+3. **Card data never touches disk, logs, backups or test fixtures in plaintext.** Only AEAD ciphertext is persisted. Tests and manual QA use only the published processor test PANs listed in `development/TempCards.md` (e.g. `4111111111111111`, `5555555555554444`, `378282246310005`), never real cards.
 4. **No `security-crypto` (deprecated).** Use Android Keystore + Tink. Key hierarchy in `02-SECURITY.md` is a contract.
 5. **Reveal, copy-CVV and share require fresh auth** (within 60 s). Share defaults to CVV off and resets each time.
 6. **Every clipboard write sets the sensitive flag** and schedules auto-clear.
@@ -39,6 +39,11 @@ Update the matching doc and `TODO.md` in the same commit as any change that alte
 ## Stack
 
 Kotlin, Compose Material3 Expressive (`1.5.0-alpha26`, pinned in `gradle/libs.versions.toml`), min SDK 28, target 36, compile 37. Planned: Hilt, Room (encrypted payload columns), DataStore, Navigation Compose, CameraX, ML Kit bundled text recognition, `androidx.biometric`, Tink. Versions mirror the sibling app `../Rewire`.
+
+## Testing
+
+- Card numbers: pick from `development/TempCards.md` (PayPal's published test PANs, one per network plus odd lengths like the 13-digit Visa `4222222222222`). Add new test PANs there first, with the source.
+- Test PIN for dev builds and emulators: `134679`. Use it in manual QA and UI tests. Never use it on a phone that holds real cards.
 
 ## Commands
 

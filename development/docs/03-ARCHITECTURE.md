@@ -118,6 +118,7 @@ Back stack is cleared on lock. Predictive back is enabled on all inner screens (
 - Robolectric or instrumented tests for Room DAO with ciphertext.
 - Compose UI tests for lock and add-card flows. Screenshots tests optional.
 - Baseline profile later, as Rewire does.
+- Test data: card numbers from `development/TempCards.md` only; test PIN `134679` on dev builds and emulators (never on a phone with real cards).
 
 ## Build and flavors
 

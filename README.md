@@ -97,7 +97,7 @@ Release signing reads `keystore.properties` (gitignored, never commit it).
 
 - The only network traffic is the update check and download from GitHub. A network security config trusts no other host, so no library can send anything elsewhere. No analytics, crash reporting, ads or network SDK.
 - Card data never reaches disk, logs or backups in plaintext. Tests use published processor test numbers
-  (for example `4242424242424242`), never real cards.
+  (listed in `development/TempCards.md`), never real cards.
 - Every clipboard write sets the sensitive flag and schedules an automatic clear.
 
 ## License
