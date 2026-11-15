@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Works out the next version from the commit subjects of a push to main.
+// Works out the next version from the commit subjects of a push to master.
 //
 // A release is asked for by a marker at the START of a commit subject:
 //

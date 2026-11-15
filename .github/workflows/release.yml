@@ -1,5 +1,5 @@
 # Automated release, driven by a marker at the START of a commit subject on
-# main:
+# master:
 #
 #   !major   1.4.2         -> 2.0.0           stable
 #   !feat    1.4.2         -> 1.5.0           stable
@@ -16,19 +16,19 @@
 #
 # TWO STEPS, NOT ONE
 #
-#   1. A marker on main opens (or updates) a release PR. It bumps VERSION and
+#   1. A marker on master opens (or updates) a release PR. It bumps VERSION and
 #      writes the CHANGELOG entry, and nothing is built. The diff is the last
 #      chance to look at what is about to ship and at the notes describing it.
 #
 #   2. Merging that PR is what releases. The signed APK is built, and the tag and the GitHub
 #      Release are created last, once it exists.
 #
-# `!patch` skips step 1: it rebuilds the APK of the version main already
+# `!patch` skips step 1: it rebuilds the APK of the version master already
 # carries and re-attaches them to the Release that exists. There is no rollback
 # for a patch - the release it replaces is the one a rollback would delete.
 #
 # If a release fails, `rollback` removes the tag and Release if either got as
-# far as existing, and reverts the version bump off main (with `[skip ci]`,
+# far as existing, and reverts the version bump off master (with `[skip ci]`,
 # or the revert would look like a release PR landing). Otherwise the next
 # release would compute from a version that was never published.
 
@@ -36,11 +36,11 @@ name: Release
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
     inputs:
       mode:
-        description: 'pr = open the release PR; release = build and publish the version main already carries; patch = rebuild the artifacts of that version in place'
+        description: 'pr = open the release PR; release = build and publish the version master already carries; patch = rebuild the artifacts of that version in place'
         required: true
         default: pr
         type: choice
@@ -167,7 +167,7 @@ jobs:
           commit-message: 'chore(release): v${{ needs.version.outputs.version }}'
           title: 'chore(release): v${{ needs.version.outputs.version }}'
           body: |
-            Automated release PR — a `!${{ needs.version.outputs.marker }}` marker on main.
+            Automated release PR — a `!${{ needs.version.outputs.marker }}` marker on master.
 
             | | |
             | --- | --- |
@@ -183,7 +183,7 @@ jobs:
             **Merging this PR is what releases.** It builds the signed Android APK, then creates the tag and the GitHub Release. Closing it
             without merging releases nothing and costs nothing.
           branch: chore/release-v${{ needs.version.outputs.version }}
-          base: main
+          base: master
           labels: release
           delete-branch: true
 
@@ -235,11 +235,11 @@ jobs:
           patch=false
 
           if [ "$EVENT" = workflow_dispatch ]; then
-            # Asked for by hand: release whatever main carries. This is the
+            # Asked for by hand: release whatever master carries. This is the
             # way back after a rollback, and how the very first version ships.
             release=true
             [ "$MODE" = patch ] && patch=true
-            echo "Dispatched ($MODE): v${current} as main stands."
+            echo "Dispatched ($MODE): v${current} as master stands."
           else
             # A squash or rebase merge puts the PR title on the commit.
             case "$subject" in
@@ -456,13 +456,13 @@ jobs:
             echo "Nothing was undone. Fix what failed and push \`!patch\` again. Repeating it is safe."
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # main, not the release commit: the last step pushes to it. The
+      # master, not the release commit: the last step pushes to it. The
       # RELEASE_TOKEN when there is one, because GITHUB_TOKEN cannot push to a
       # protected branch.
       - uses: actions/checkout@v4
         if: needs.merged.outputs.patch != 'true'
         with:
-          ref: main
+          ref: master
           fetch-depth: 0
           token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
@@ -483,7 +483,7 @@ jobs:
 
       # `[skip ci]` is not decoration. Without it this push comes straight back
       # through `merged`, which reads a changed VERSION as a release PR landing.
-      - name: Take the version bump off main
+      - name: Take the version bump off master
         if: needs.merged.outputs.patch != 'true'
         env:
           VERSION: ${{ needs.merged.outputs.version }}
@@ -491,12 +491,12 @@ jobs:
         run: |
           previous="$(git show "${SHA}^:VERSION" 2>/dev/null | tr -d '[:space:]' || true)"
           if [ -z "$previous" ] || [ "$previous" = "$VERSION" ]; then
-            echo "${SHA} did not bump the version; there is nothing to take off main."
+            echo "${SHA} did not bump the version; there is nothing to take off master."
             exit 0
           fi
           # Anything pushed since is not this job's to move.
           if [ "$(git rev-parse HEAD)" != "$SHA" ]; then
-            echo "::warning::main has moved past ${SHA}; the v${VERSION} bump is still on it and has to be reverted by hand."
+            echo "::warning::master has moved past ${SHA}; the v${VERSION} bump is still on it and has to be reverted by hand."
             exit 0
           fi
 
@@ -511,10 +511,10 @@ jobs:
           fi
           git commit -q \
             -m "revert(release): back out v${VERSION} [skip ci]" \
-            -m "The release failed and was rolled back, so main goes back to v${previous}."
+            -m "The release failed and was rolled back, so master goes back to v${previous}."
 
-          if git push origin HEAD:main; then
-            echo "### Release v${VERSION} rolled back; main is back on v${previous}." >> "$GITHUB_STEP_SUMMARY"
+          if git push origin HEAD:master; then
+            echo "### Release v${VERSION} rolled back; master is back on v${previous}." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "::warning::Could not push the revert - branch protection, most likely. Revert ${SHA} by hand."
           fi
