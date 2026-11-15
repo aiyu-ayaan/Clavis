@@ -37,7 +37,9 @@ import com.aiyu.clavis.feature.landing.LandingScreen
 import com.aiyu.clavis.feature.lock.LockScreen
 import com.aiyu.clavis.feature.scan.ScanScreen
 import com.aiyu.clavis.feature.settings.ChangePinScreen
+import com.aiyu.clavis.feature.settings.AboutScreen
 import com.aiyu.clavis.feature.settings.SettingsScreen
+import com.aiyu.clavis.feature.settings.UpdatesScreen
 import com.aiyu.clavis.feature.setup.SetupScreen
 import com.aiyu.clavis.ui.components.LocalNavAnimatedScope
 import com.aiyu.clavis.ui.components.LocalSharedTransitionScope
@@ -56,6 +58,8 @@ object Routes {
     @Serializable data class Detail(val id: String)
     @Serializable data object Settings
     @Serializable data object ChangePin
+    @Serializable data object Updates
+    @Serializable data object About
     @Serializable data object ResetPin
 }
 
@@ -172,8 +176,18 @@ fun ClavisNavHost(session: SessionViewModel, nav: NavHostController = rememberNa
                     composable<Routes.Settings> {
                         CompositionLocalProvider(LocalNavAnimatedScope provides this) {
                             PredictiveBack(onBack = { nav.popBackStack() }) {
-                                SettingsScreen(onBack = { nav.popBackStack() }, onChangePin = { nav.navigate(Routes.ChangePin) })
+                                SettingsScreen(onBack = { nav.popBackStack() }, onChangePin = { nav.navigate(Routes.ChangePin) }, onUpdates = { nav.navigate(Routes.Updates) }, onAbout = { nav.navigate(Routes.About) })
                             }
+                        }
+                    }
+                    composable<Routes.Updates> {
+                        CompositionLocalProvider(LocalNavAnimatedScope provides this) {
+                            PredictiveBack(onBack = { nav.popBackStack() }) { UpdatesScreen(onBack = { nav.popBackStack() }) }
+                        }
+                    }
+                    composable<Routes.About> {
+                        CompositionLocalProvider(LocalNavAnimatedScope provides this) {
+                            PredictiveBack(onBack = { nav.popBackStack() }) { AboutScreen(onBack = { nav.popBackStack() }) }
                         }
                     }
                     composable<Routes.ResetPin>(enterTransition = fadeOnly) {

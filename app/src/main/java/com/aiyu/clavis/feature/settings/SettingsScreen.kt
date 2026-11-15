@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccountBalance
 import androidx.compose.material.icons.rounded.Brightness6
-import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.ContentPasteOff
 import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.Fingerprint
@@ -21,6 +19,7 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Password
 import androidx.compose.material.icons.rounded.Block
+import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -102,7 +101,7 @@ class SettingsViewModel @Inject constructor(
 
 /** Settings (screen 9): Security, Privacy, Appearance, About. */
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onChangePin: () -> Unit, vm: SettingsViewModel = hiltViewModel()) {
+fun SettingsScreen(onBack: () -> Unit, onChangePin: () -> Unit, onUpdates: () -> Unit, onAbout: () -> Unit, vm: SettingsViewModel = hiltViewModel()) {
     val s by vm.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val activity = LocalActivity.current as FragmentActivity
@@ -163,12 +162,9 @@ fun SettingsScreen(onBack: () -> Unit, onChangePin: () -> Unit, vm: SettingsView
             }
         }
         Spacer(Modifier.height(16.dp))
-        UpdatesGroup(s.updatesEnabled, onEnabled = { on -> vm.update { it.copy(updatesEnabled = on) } })
-        Spacer(Modifier.height(16.dp))
-        Group(stringResource(R.string.settings_section_about)) {
-            Row(Icons.Rounded.Info, stringResource(R.string.app_name), stringResource(R.string.settings_version, BuildConfig.VERSION_NAME))
-            Row(Icons.Rounded.CloudOff, stringResource(R.string.settings_no_internet), stringResource(R.string.settings_no_internet_body))
-            Row(Icons.Rounded.AccountBalance, stringResource(R.string.settings_bin_data), stringResource(R.string.settings_bin_data_body))
+        Group(stringResource(R.string.settings_section_updates)) {
+            Row(Icons.Rounded.SystemUpdate, stringResource(R.string.settings_section_updates), stringResource(R.string.settings_version, BuildConfig.VERSION_NAME), onClick = onUpdates)
+            Row(Icons.Rounded.Info, stringResource(R.string.settings_section_about), stringResource(R.string.settings_about_body), onClick = onAbout)
         }
         Spacer(Modifier.height(16.dp))
         Group(stringResource(R.string.settings_section_danger)) {
@@ -215,7 +211,7 @@ private fun clipboardLabel(sec: Int) = stringResource(
 )
 
 @Composable
-private fun Row(icon: ImageVector, title: String, value: String? = null, onClick: (() -> Unit)? = null) {
+internal fun Row(icon: ImageVector, title: String, value: String? = null, onClick: (() -> Unit)? = null) {
     ListItem(
         headlineContent = { Text(title) },
         supportingContent = value?.let { { Text(it) } },
@@ -226,7 +222,7 @@ private fun Row(icon: ImageVector, title: String, value: String? = null, onClick
 }
 
 @Composable
-private fun ToggleRow(icon: ImageVector, title: String, body: String?, checked: Boolean, enabled: Boolean = true, onChange: (Boolean) -> Unit) {
+internal fun ToggleRow(icon: ImageVector, title: String, body: String?, checked: Boolean, enabled: Boolean = true, onChange: (Boolean) -> Unit) {
     ListItem(
         headlineContent = { Text(title) },
         supportingContent = body?.let { { Text(it) } },
@@ -261,25 +257,4 @@ private fun <T> ChoiceDialog(title: String, choices: List<T>, selected: T, label
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
-}
-
-@Composable
-private fun UpdatesGroup(enabled: Boolean, onEnabled: (Boolean) -> Unit, vm: com.aiyu.clavis.update.UpdateViewModel = hiltViewModel()) {
-    val state by vm.state.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
-    Group(stringResource(R.string.settings_section_updates)) {
-        ToggleRow(Icons.Rounded.Info, stringResource(R.string.settings_updates_auto), stringResource(R.string.settings_updates_auto_body), enabled, onChange = onEnabled)
-        ListItem(
-            headlineContent = { Text(com.aiyu.clavis.update.updateStatusText(state) ?: stringResource(R.string.settings_version, BuildConfig.VERSION_NAME)) },
-            trailingContent = {
-                Column(horizontalAlignment = Alignment.End) {
-                    com.aiyu.clavis.update.UpdateActions(state, vm)
-                    TextButton(onClick = { scope.launch { vm.updater.check(manual = true) } }, enabled = state !is com.aiyu.clavis.update.UpdateState.Checking && state !is com.aiyu.clavis.update.UpdateState.Downloading) {
-                        Text(stringResource(R.string.update_check))
-                    }
-                }
-            },
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-        )
-    }
 }

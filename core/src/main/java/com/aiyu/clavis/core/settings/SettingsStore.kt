@@ -24,6 +24,8 @@ data class Settings(
     val neverShare: Boolean = false,
     val updatesEnabled: Boolean = true,
     val updateLastChecked: Long = 0,
+    /** Minimum release stage to offer (Version.ALPHA/BETA/STABLE); -1 follows the installed build. */
+    val updateChannel: Int = -1,
     val homeLayout: CardLayout = CardLayout.CARDS,
     val homeGrouping: CardGrouping = CardGrouping.NONE,
 ) {
@@ -44,6 +46,7 @@ class SettingsStore(private val context: Context) {
         val neverShare = booleanPreferencesKey("never_share")
         val updates = booleanPreferencesKey("updates_enabled")
         val updateChecked = longPreferencesKey("update_last_checked")
+        val updateChannel = intPreferencesKey("update_channel")
         val homeLayout = stringPreferencesKey("home_layout")
         val homeGrouping = stringPreferencesKey("home_grouping")
     }
@@ -60,6 +63,7 @@ class SettingsStore(private val context: Context) {
             prefs[K.neverShare] = s.neverShare
             prefs[K.updates] = s.updatesEnabled
             prefs[K.updateChecked] = s.updateLastChecked
+            prefs[K.updateChannel] = s.updateChannel
             prefs[K.homeLayout] = s.homeLayout.name
             prefs[K.homeGrouping] = s.homeGrouping.name
         }
@@ -77,6 +81,7 @@ class SettingsStore(private val context: Context) {
         neverShare = this[K.neverShare] ?: false,
         updatesEnabled = this[K.updates] ?: true,
         updateLastChecked = this[K.updateChecked] ?: 0,
+        updateChannel = this[K.updateChannel] ?: -1,
         homeLayout = this[K.homeLayout]?.let { runCatching { CardLayout.valueOf(it) }.getOrNull() } ?: CardLayout.CARDS,
         homeGrouping = this[K.homeGrouping]?.let { runCatching { CardGrouping.valueOf(it) }.getOrNull() } ?: CardGrouping.NONE,
     )

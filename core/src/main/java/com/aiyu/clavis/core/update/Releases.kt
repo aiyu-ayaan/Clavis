@@ -40,9 +40,12 @@ object Releases {
     const val REPOSITORY = "aiyu-ayaan/Clavis"
     const val API = "https://api.github.com/repos/$REPOSITORY/releases?per_page=30"
 
-    /** Newest release at least as steady as the installed build and newer than it, by version, never publish date. */
-    fun pick(releases: List<Release>, installed: Version?): Release? =
-        releases.filter { r -> installed == null || (r.version.stage >= installed.stage && r.version > installed) }.maxByOrNull { it.version }
+    /**
+     * Newest release on [channel] (a minimum stage: alpha takes everything, stable only stable; null follows the
+     * installed build) and newer than it, by version, never publish date.
+     */
+    fun pick(releases: List<Release>, installed: Version?, channel: Int? = null): Release? =
+        releases.filter { r -> installed == null || (r.version.stage >= (channel ?: installed.stage) && r.version > installed) }.maxByOrNull { it.version }
 
     /** `Clavis-<v>.apk`. A release without one (its Android job failed) is not an offer. */
     fun apkFor(release: Release): ReleaseAsset? =

@@ -44,7 +44,7 @@ class AppUpdater @Inject constructor(
     private val downloads = File(context.cacheDir, "updates")
     private val _state = MutableStateFlow<UpdateState>(UpdateState.Idle)
     val state: StateFlow<UpdateState> = _state.asStateFlow()
-    private val installed: Version? by lazy { Version.parse(BuildConfig.VERSION_NAME.removeSuffix("-dev")) }
+    val installed: Version? by lazy { Version.parse(BuildConfig.VERSION_NAME.removeSuffix("-dev")) }
 
     /** [manual] is the Check button: it reports "up to date" and ignores the setting and the hourly gap. */
     suspend fun check(manual: Boolean = false): UpdateState = withContext(Dispatchers.IO) {
@@ -57,7 +57,7 @@ class AppUpdater @Inject constructor(
             val c = open(Releases.API)
             try {
                 if (c.responseCode !in 200..299) error(context.getString(R.string.update_err_github, c.responseCode))
-                val pick = Releases.pick(Releases.parse(c.inputStream.bufferedReader().use { it.readText() }), installed)
+                val pick = Releases.pick(Releases.parse(c.inputStream.bufferedReader().use { it.readText() }), installed, s.updateChannel.takeIf { it >= 0 })
                 val apk = pick?.let(Releases::apkFor)
                 if (pick == null || apk == null) UpdateState.UpToDate else UpdateState.Available(pick, apk)
             } finally { c.disconnect() }

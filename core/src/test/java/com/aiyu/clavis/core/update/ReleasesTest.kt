@@ -27,6 +27,13 @@ class ReleasesTest {
         assertEquals(v("1.0.1"), Releases.pick(listOf(rel("1.0.1"), rel("1.0.1-beta.2")), v("1.0.1-beta.1"))?.version)
     }
 
+    @Test fun chosenChannelOverridesInstalledStage() {
+        val all = listOf(rel("1.1.0-alpha.1"), rel("1.0.1-beta.1"), rel("1.0.1"))
+        assertEquals(v("1.1.0-alpha.1"), Releases.pick(all, v("1.0.0"), Version.ALPHA)?.version)
+        assertEquals(v("1.0.1"), Releases.pick(all, v("1.0.0"), Version.BETA)?.version)
+        assertEquals(v("1.0.1"), Releases.pick(all, v("1.0.0-alpha.1"), Version.STABLE)?.version)
+    }
+
     @Test fun nothingNewer() = assertNull(Releases.pick(listOf(rel("1.0.0")), v("1.0.0")))
 
     @Test fun apkMatching() {

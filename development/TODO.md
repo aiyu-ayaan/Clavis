@@ -99,7 +99,7 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 
 ## Release and updates
 
-- [x] In-app updater from GitHub releases (D24): check on launch, Settings → Updates, system installer
+- [x] In-app updater from GitHub releases (D24): check on launch, Settings → Updates screen with alpha/beta/stable channel, About screen with developer section, system installer
 - [x] Release workflow (`!feat` / `!fix` / `!alpha` markers → release PR → signed APK + GitHub Release)
 - [x] Release signing from `ANDROID_KEYSTORE_*` secrets, alias `Clavis`
 - [x] APK size: ARM ABIs only, English-only library resources, R8 + resource shrinking
