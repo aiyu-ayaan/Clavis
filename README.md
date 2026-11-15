@@ -13,6 +13,9 @@ A local card vault for Android. Clavis keeps your cards (number, expiry, holder,
 mandatory PIN and optional biometric, with smart copy and a safe share flow. No analytics, no cloud, no account:
 your cards never leave the phone. The only network use is the update check against this repository's GitHub releases.
 
+<p align="center"><a href="introvideo.mp4"><img src="res/introvideo.gif" width="280" alt="Clavis launch video"></a></p>
+<p align="center"><sub>Launch video (click for the full-quality MP4)</sub></p>
+
 - Mandatory PIN (4–8 digits, trivial PINs rejected) with optional biometric unlock
 - Field-level **AES-256-GCM** (Tink); keys wrapped by the hardware-backed Android Keystore
 - Scan a card with the camera (on-device text recognition) or type it in; network and issuer detected from the number
