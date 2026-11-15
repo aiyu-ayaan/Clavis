@@ -1,0 +1,24 @@
+# Android / Gradle
+*.iml
+.gradle
+.kotlin/
+/build
+/*/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+.idea/
+
+# Release signing (never commit)
+keystore.properties
+*.jks
+*.keystore
+
+# Local agent state
+.claude/settings.local.json
+.codegraph/
+
+# OS
+.DS_Store
+Thumbs.db
