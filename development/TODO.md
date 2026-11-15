@@ -57,8 +57,8 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 - [x] BIN table build script (CSV → `bins.bin`), `BinLookup` (6-digit; 8-digit when data exists) + tests
 - [ ] Curated Indian issuer layer
 - [x] Detected chips (bank, network, type) editable in the form
-- [ ] Scan: CameraX preview, ML Kit bundled OCR, `CardTextParser`, 3-of-5 stability filter, torch, guide frame
-- [ ] Parser tests from recorded text fixtures (no real card numbers)
+- [x] Scan (only text inside the guide frame: not yet, whole frame is parsed): CameraX preview, ML Kit bundled OCR, `CardTextParser`, 3-of-5 stability filter, torch, guide frame
+- [x] Parser tests from recorded text fixtures (no real card numbers)
 
 ## Phase 6 — Copy and share
 

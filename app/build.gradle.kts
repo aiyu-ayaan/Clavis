@@ -28,6 +28,8 @@ android {
         debug {
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
+            // Debug installs only on 64-bit phones and the emulator; ML Kit's native libs for 4 ABIs make the APK huge.
+            ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
         }
     }
 
@@ -60,6 +62,11 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.biometric)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.view)
+    // On-device OCR (D8). It bundles Google telemetry (datatransport); INTERNET is stripped in the manifest so it cannot send (D22).
+    implementation(libs.mlkit.text.recognition)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
