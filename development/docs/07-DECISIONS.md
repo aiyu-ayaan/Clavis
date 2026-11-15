@@ -28,6 +28,7 @@ Format: decision, status, reason. Status is **Decided** (default chosen, change 
 | D20 | Card row id is a random UUID string, not an auto-increment Long | Decided | The id is part of the AEAD associated data, so it must exist before the first encryption. |
 | D22 | ML Kit bundled OCR ships Google's `datatransport` telemetry, which adds `INTERNET` and `ACCESS_NETWORK_STATE`. Both are removed with `tools:node="remove"`; the module stays (ML Kit references it, excluding it crashes) | Decided (owner, 2026-11-15) | Keeps scan offline. Without `INTERNET` the uploader cannot open a socket. CI must keep checking the merged manifest for `INTERNET`. Revisit if a telemetry-free OCR appears. |
 | D21 | Dependency: `com.google.crypto.tink:tink-android` | Decided | AEAD + HKDF for card fields. Google-maintained, no network behavior. |
+| D23 | Logo: **Sleeve**, a card rising out of its sleeve with a thumb notch, one colour (pale blue `#D1E4FF` on ink `#1E3A5F`). It replaces the placeholder key glyph | Decided (owner, 2026-11-15) | Chosen from three rounds of concepts (`development/brand/logo/`). It says "your card, put away until you pull it out" without lock or shield clichés. A trademark search is still to do. |
 
 ## Facts to verify before implementation
 

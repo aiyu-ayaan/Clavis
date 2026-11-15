@@ -36,6 +36,7 @@ Expressive APIs are alpha. If an API shifts, fall back to the stable component w
 
 ### 1. Splash
 System splash (`core-splashscreen`) with the app mark, hands off to Intro on first run, else Lock.
+The mark is **Sleeve**: a card rising out of its sleeve, with a thumb notch to pull it out (D23). On API 31+ it animates part by part (`splash_mark_animated.xml`, 1000 ms): the sleeve rises, the card slides up out of the slot, the chip pops, and the mark breathes once. `MainActivity` waits for the animation to finish, then fades the splash out. API 28-30 show the static mark. The splash follows the system light/dark mode (`clavis_splash_background`, `clavis_splash_mark` in `ui-common/res/values{,-night}/colors.xml`, mirroring the theme's background and primary); the launcher icon uses `clavis_brand_ink` and `clavis_brand_mark`; the one-colour glyph is `ui-common/res/drawable/clavis_glyph.xml`; geometry source is `development/brand/logo/gen4.py`.
 
 ### 2. Intro (landing pager) — "pull intro"
 Full-screen `HorizontalPager`, 3 pages, large expressive illustration (morphing shapes), title, one line of copy, page indicator, Skip and Next/Get started.

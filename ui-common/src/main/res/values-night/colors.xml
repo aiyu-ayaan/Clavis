@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Night splash tokens: DarkColors background and primary (theme/Color.kt). -->
+<resources>
+    <color name="clavis_splash_background">#FF111418</color>
+    <color name="clavis_splash_mark">#FFA0CAFD</color>
+</resources>

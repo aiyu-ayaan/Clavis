@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.WindowManager
+import android.view.animation.PathInterpolator
 import androidx.activity.compose.setContent
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
@@ -28,8 +29,20 @@ class MainActivity : FragmentActivity() {
     private var stoppedAt = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splash = installSplashScreen()
         super.onCreate(savedInstanceState)
+        splash.setOnExitAnimationListener { provider ->
+            // Let the mark finish (API 31+; on older APIs the icon is static and start is 0, so no wait), then fade.
+            val remaining = provider.iconAnimationStartMillis + provider.iconAnimationDurationMillis -
+                System.currentTimeMillis() // start is epoch-based
+            provider.view.animate()
+                .alpha(0f)
+                .setStartDelay(remaining.coerceIn(0, SPLASH_MS))
+                .setDuration(EXIT_MS)
+                .setInterpolator(EMPHASIZED_ACCELERATE)
+                .withEndAction { provider.remove() }
+                .start()
+        }
         // Always on: blocks screenshots, screen recording and the recents thumbnail (D12).
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
         if (Build.VERSION.SDK_INT >= 33) setRecentsScreenshotEnabled(false)
@@ -67,5 +80,12 @@ class MainActivity : FragmentActivity() {
         stoppedAt = 0
         // Back from the share sheet: the target has read the image by now (05-SHARE-AND-COPY.md).
         if (ShareCache.pending) { ShareCache.pending = false; ShareCache.clear(this) }
+    }
+
+    private companion object {
+        /** Length of splash_mark_animated; matches windowSplashScreenAnimationDuration in values-v31. */
+        const val SPLASH_MS = 1000L
+        const val EXIT_MS = 200L
+        val EMPHASIZED_ACCELERATE = PathInterpolator(0.3f, 0f, 0.8f, 0.15f)
     }
 }

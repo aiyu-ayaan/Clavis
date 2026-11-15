@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Brand tokens for the Clavis mark (development/brand/logo/gen4.py). Used by the launcher icon, the splash
+     and anywhere outside Compose. Inside Compose use MaterialTheme.colorScheme: these are not theme colors. -->
+<resources>
+    <!-- Deep indigo: splash and launcher background, and the colour seen through the chip and the gap. -->
+    <color name="clavis_brand_ink">#FF1E3A5F</color>
+    <!-- Pale blue: the mark itself (card and sleeve). 9.6:1 on ink. -->
+    <color name="clavis_brand_mark">#FFD1E4FF</color>
+    <!-- Splash: follows the system light/dark mode (the splash runs before the in-app theme setting is read).
+         Light/dark values mirror the theme's background and primary (theme/Color.kt). Night values in values-night. -->
+    <color name="clavis_splash_background">#FFF8F9FF</color>
+    <color name="clavis_splash_mark">#FF36618E</color>
+</resources>

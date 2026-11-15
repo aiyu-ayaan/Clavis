@@ -10,8 +10,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -26,8 +24,10 @@ import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
+import com.aiyu.clavis.ui.R
 import com.aiyu.clavis.ui.theme.ClavisMotion
 import com.aiyu.clavis.ui.theme.rememberReducedMotion
 
@@ -90,22 +90,20 @@ fun heroBrush(): Brush {
 }
 
 /**
- * The Clavis mark: a morphing seal with a key glyph. The same composable is used at every size so the
- * shared-element transition between landing, setup, lock and home reads as one object.
+ * The Clavis mark: a morphing seal with the brand glyph (card in its sleeve) or, on auth screens, a state icon.
+ * The same composable is used at every size so the shared-element transition between landing, setup, lock and
+ * home reads as one object.
  */
 @Composable
 fun ClavisMark(
     modifier: Modifier = Modifier,
     animate: Boolean = true,
-    icon: ImageVector = Icons.Rounded.Key,
+    icon: ImageVector? = null,
 ) {
     Box(modifier, contentAlignment = Alignment.Center) {
         MorphingShape(heroBrush(), Modifier.fillMaxSize(), animate = animate)
-        Icon(
-            icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.fillMaxSize(0.42f),
-        )
+        val tint = MaterialTheme.colorScheme.onPrimary
+        if (icon != null) Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.fillMaxSize(0.42f))
+        else Icon(painterResource(R.drawable.clavis_glyph), contentDescription = null, tint = tint, modifier = Modifier.fillMaxSize(0.6f))
     }
 }

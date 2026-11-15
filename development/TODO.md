@@ -13,7 +13,7 @@ Legend: `[x]` done, `[ ]` open, **(owner)** needs a decision from the owner. Des
 ## Phase 1 — Foundation
 
 - [x] Brand: color seed (navy #1E3A5F + emerald tertiary), tonal palette
-- [ ] Brand: launcher icon (adaptive + monochrome), splash mark
+- [x] Brand: launcher icon (adaptive + monochrome), splash mark (Sleeve, animated on API 31+)
 - [x] `ui-common`: `Motion.kt` + `rememberReducedMotion`, `InnerScreen`, predictive back, shared-transition helpers (port from Rewire)
 - [x] Add Hilt, Room, DataStore, Navigation Compose to the catalog use sites
 - [ ] `dev` / `prod` flavors, DEV badge

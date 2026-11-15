@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Splash theme; no user-visible text, so it stays here. All strings live in :ui-common. -->
+    <!-- Splash theme; no user-visible text, so it stays here. All strings live in :ui-common.
+         API 28-30 (compat) shows the static mark; values-v31 runs the animated one. -->
     <style name="Theme.Clavis.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#FF1E3A5F</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher</item>
+        <item name="windowSplashScreenBackground">@color/clavis_splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_mark</item>
         <item name="postSplashScreenTheme">@android:style/Theme.Material.NoActionBar</item>
     </style>
 </resources>

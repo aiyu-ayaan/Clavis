@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- API 31+ runs the part-by-part mark; duration must cover splash_mark_animated (1000ms). -->
+    <style name="Theme.Clavis.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/clavis_splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_mark_animated</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="postSplashScreenTheme">@android:style/Theme.Material.NoActionBar</item>
+    </style>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher foreground and monochrome layer: the one-colour glyph, inset so the 256 grid
+     scales by 0.23 and the farthest corner (143 units from centre) stays inside the 66dp safe circle. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/clavis_glyph"
+    android:inset="24.56dp" />

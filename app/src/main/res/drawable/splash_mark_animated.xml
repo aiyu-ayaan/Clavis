@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Splash animation, part by part (API 31+). Geometry: development/brand/logo/gen4.py, 256 grid.
+       0-420ms   sleeve rises and settles
+     280-760ms   card slides up out of the sleeve's slot (clipped, so it emerges from inside) with a small overshoot
+     640-900ms   chip pops onto the card
+     780-1000ms  whole mark breathes once (1.0 > 1.06 > 1.0)
+     Keep windowSplashScreenAnimationDuration (values-v31/themes.xml) and SPLASH_MS (MainActivity) at 1000. -->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="108dp"
+            android:height="108dp"
+            android:viewportWidth="108"
+            android:viewportHeight="108">
+            <!-- 256 grid scaled 0.25: corner reach 143 x 0.25 = 36dp, inside the 72dp icon circle. -->
+            <group
+                android:scaleX="0.25"
+                android:scaleY="0.25"
+                android:translateX="22"
+                android:translateY="22">
+                <group
+                    android:name="mark"
+                    android:pivotX="128"
+                    android:pivotY="128">
+                    <!-- Card lives above the sleeve's top edge; the clip makes it rise from inside the slot. -->
+                    <group android:name="slot">
+                        <clip-path android:pathData="M0,0 H256 V110 H0 Z" />
+                        <group
+                            android:name="card"
+                            android:translateY="92">
+                            <path
+                                android:fillColor="@color/clavis_splash_mark"
+                                android:pathData="M52,104 V42 A16,16 0 0 1 68,26 H188 A16,16 0 0 1 204,42 V104 Z" />
+                            <group
+                                android:name="chip"
+                                android:pivotX="87"
+                                android:pivotY="56"
+                                android:scaleX="0"
+                                android:scaleY="0">
+                                <path
+                                    android:fillColor="@color/clavis_splash_background"
+                                    android:pathData="M77,44 H97 A5,5 0 0 1 102,49 V63 A5,5 0 0 1 97,68 H77 A5,5 0 0 1 72,63 V49 A5,5 0 0 1 77,44 Z" />
+                            </group>
+                        </group>
+                    </group>
+                    <group
+                        android:name="sleeve"
+                        android:pivotX="128"
+                        android:pivotY="230"
+                        android:scaleX="0.7"
+                        android:scaleY="0.7"
+                        android:translateY="36">
+                        <path
+                            android:name="sleeve_fill"
+                            android:fillAlpha="0"
+                            android:fillColor="@color/clavis_splash_mark"
+                            android:pathData="M38,116 H100 A28,28 0 0 0 156,116 H218 A10,10 0 0 1 228,126 V208 A22,22 0 0 1 206,230 H50 A22,22 0 0 1 28,208 V126 A10,10 0 0 1 38,116 Z" />
+                    </group>
+                </group>
+            </group>
+        </vector>
+    </aapt:attr>
+
+    <target android:name="sleeve_fill">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="220"
+                android:interpolator="@android:interpolator/linear"
+                android:propertyName="fillAlpha"
+                android:valueFrom="0"
+                android:valueTo="1" />
+        </aapt:attr>
+    </target>
+
+    <target android:name="sleeve">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:duration="420"
+                    android:interpolator="@interpolator/emphasized_decelerate"
+                    android:propertyName="translateY"
+                    android:valueFrom="36"
+                    android:valueTo="0" />
+                <objectAnimator
+                    android:duration="420"
+                    android:interpolator="@interpolator/emphasized_decelerate"
+                    android:propertyName="scaleX"
+                    android:valueFrom="0.7"
+                    android:valueTo="1" />
+                <objectAnimator
+                    android:duration="420"
+                    android:interpolator="@interpolator/emphasized_decelerate"
+                    android:propertyName="scaleY"
+                    android:valueFrom="0.7"
+                    android:valueTo="1" />
+            </set>
+        </aapt:attr>
+    </target>
+
+    <target android:name="card">
+        <aapt:attr name="android:animation">
+            <!-- Overshoot stands in for a spring: AVDs have no spring physics. -->
+            <objectAnimator
+                android:duration="480"
+                android:interpolator="@android:anim/overshoot_interpolator"
+                android:propertyName="translateY"
+                android:startOffset="280"
+                android:valueFrom="92"
+                android:valueTo="0" />
+        </aapt:attr>
+    </target>
+
+    <target android:name="chip">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:duration="260"
+                    android:interpolator="@android:anim/overshoot_interpolator"
+                    android:propertyName="scaleX"
+                    android:startOffset="640"
+                    android:valueFrom="0"
+                    android:valueTo="1" />
+                <objectAnimator
+                    android:duration="260"
+                    android:interpolator="@android:anim/overshoot_interpolator"
+                    android:propertyName="scaleY"
+                    android:startOffset="640"
+                    android:valueFrom="0"
+                    android:valueTo="1" />
+            </set>
+        </aapt:attr>
+    </target>
+
+    <target android:name="mark">
+        <aapt:attr name="android:animation">
+            <!-- One breath via keyframes, so no second animator can apply its start value early. -->
+            <objectAnimator
+                android:duration="220"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:startOffset="780">
+                <propertyValuesHolder android:propertyName="scaleX">
+                    <keyframe android:fraction="0" android:value="1" />
+                    <keyframe android:fraction="0.5" android:value="1.06" />
+                    <keyframe android:fraction="1" android:value="1" />
+                </propertyValuesHolder>
+                <propertyValuesHolder android:propertyName="scaleY">
+                    <keyframe android:fraction="0" android:value="1" />
+                    <keyframe android:fraction="0.5" android:value="1.06" />
+                    <keyframe android:fraction="1" android:value="1" />
+                </propertyValuesHolder>
+            </objectAnimator>
+        </aapt:attr>
+    </target>
+</animated-vector>
